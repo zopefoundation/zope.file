@@ -1,0 +1,182 @@
+========================
+Downloading File Objects
+========================
+
+The file content type provides a view used to download the file,
+regardless of the browser's default behavior for the content type.
+This relies on browser support for the Content-Disposition header.
+
+The download support is provided by two distinct objects:  A view that
+provides the download support using the information in the content
+object, and a result object that can be used to implement a file
+download by other views.  The result object can be used to override
+the content-type or the filename suggested to the browser.
+
+Note that result objects are intended to be used once and then
+discarded.
+
+Let's start by creating a file object we can use to demonstrate the
+download support::
+
+  >>> from zope.file.file import File
+  >>> f = File()
+
+Headers
+-------
+
+Now, let's create a download result for this file::
+
+  >>> from zope.file.download import DownloadResult
+  >>> result = DownloadResult(f)
+
+Since there's no suggested download filename on the file, the
+Content-Disposition header doesn't specify one, but does indicate that
+the response body be treated as a file to save rather than to apply
+the default handler for the content type.
+
+  >>> sorted(result.headers)
+  [('Content-Disposition', 'attachment'),
+   ('Content-Length', '0'),
+   ('Content-Type', 'application/octet-stream')]
+
+
+Note that a default content type of 'application/octet-stream' is
+used.
+
+If the file object specifies a content type, that's used in the result
+by default::
+
+  >>> f.mimeType = "text/plain"
+  >>> result = DownloadResult(f)
+  >>> sorted(result.headers)
+  [('Content-Disposition', 'attachment'),
+   ('Content-Length', '0'),
+   ('Content-Type', 'text/plain')]
+
+Alternatively, a content type can be specified to the result
+constructor::
+
+  >>> result = DownloadResult(f, contentType="text/xml")
+  >>> sorted(result.headers)
+  [('Content-Disposition', 'attachment'),
+   ('Content-Length', '0'),
+   ('Content-Type', 'text/xml')]
+
+The filename provided to the browser can be controlled similarly.  If
+the content object provides one, it will be used by default::
+
+  >>> result = DownloadResult(f)
+  >>> sorted(result.headers)
+  [('Content-Disposition', 'attachment'),
+   ('Content-Length', '0'),
+   ('Content-Type', 'text/plain')]
+
+Providing an alternate name to the result constructor overrides the
+download name from the file::
+
+  >>> result = DownloadResult(f, downloadName="foo.txt")
+  >>> sorted(result.headers)
+  [('Content-Disposition', 'attachment; filename="foo.txt"'),
+   ('Content-Length', '0'),
+   ('Content-Type', 'text/plain')]
+
+The default Content-Disposition header can be overridden by providing
+an argument to the DownloadResult constructor:
+
+  >>> result = DownloadResult(f, contentDisposition="inline")
+  >>> sorted(result.headers)
+  [('Content-Disposition', 'inline'),
+   ('Content-Length', '0'),
+   ('Content-Type', 'text/plain')]
+
+
+Body
+----
+
+Since there's no data in this file, there are no body chunks:
+
+  >>> list(result.body)
+  []
+
+We still need to see how non-empty files are handled.  Let's write
+some data to our file object::
+
+  >>> w = f.open("wb")
+  >>> w.write("some text")
+  >>> w.flush()
+
+Now we can create a result object and see if we get the data we
+expect::
+
+  >>> result = DownloadResult(f)
+  >>> L = list(result.body)
+  >>> "".join(L)
+  'some text'
+
+If the body content is really large, the iterator may provide more
+than one chunk of data::
+
+  >>> w.write("*" * 1024 * 1024)
+  >>> w.flush()
+
+  >>> result = DownloadResult(f)
+  >>> L = list(result.body)
+  >>> len(L) > 1
+  True
+
+Once iteration over the body has completed, further iteration will not
+yield additional data::
+
+  >>> list(result.body)
+  []
+
+
+The Download View
+-----------------
+
+Now that we've seen the result object, let's take a look at the basic
+download view that uses it.  We'll need to add a file object where we
+can get to it using a browser::
+
+  >>> f = File()
+  >>> f.mimeType = "text/plain"
+  >>> w = f.open("w")
+  >>> w.write("some text")
+  >>> w.close()
+
+  >>> getRootFolder()["abcdefg"] = f
+
+  >>> import transaction
+  >>> transaction.commit()
+
+Now, let's request the download view of the file object and check the
+result::
+
+  >>> print http("""
+  ... GET /abcdefg/@@download HTTP/1.1
+  ... Authorization: Basic mgr:mgrpw
+  ... """, handle_errors=False)
+  HTTP/1.1 200 Ok
+  Content-Disposition: attachment; filename="abcdefg"
+  Content-Length: 9
+  Content-Type: text/plain
+  <BLANKLINE>
+  some text
+
+
+The Inline View
+-----------------
+
+In addition, it is sometimes useful to view the data inline instead of
+downloading it. A basic inline view is provided for this use case.
+
+  >>> print http("""
+  ... GET /abcdefg/@@inline HTTP/1.1
+  ... Authorization: Basic mgr:mgrpw
+  ... """, handle_errors=False)
+  HTTP/1.1 200 Ok
+  Content-Disposition: inline; filename="abcdefg"
+  Content-Length: 9
+  Content-Type: text/plain
+  <BLANKLINE>
+  some text
