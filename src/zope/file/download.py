@@ -21,7 +21,7 @@ import zope.app.publisher.interfaces.browser
 import zope.interface
 import zope.mimetype.interfaces
 import zope.publisher.interfaces.browser
-import zope.publisher.interfaces.http
+import zope.publisher.http
 
 import zope.app.publisher.interfaces.browser
 
@@ -68,7 +68,7 @@ class DownloadResult(object):
     """Result object for a download request."""
 
     zope.interface.implements(
-        zope.publisher.interfaces.http.IResult)
+        zope.publisher.http.IResult)
 
     def __init__(self, context, contentType=None, downloadName=None,
                  contentDisposition="attachment"):

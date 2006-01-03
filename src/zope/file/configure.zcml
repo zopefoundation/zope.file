@@ -100,7 +100,7 @@
       />
 
   <class class=".download.DownloadResult">
-    <allow interface="zope.publisher.interfaces.http.IResult"/>
+    <allow interface="zope.publisher.http.IResult"/>
   </class>
 
 </configure>
