@@ -5,7 +5,7 @@
     i18n_domain="zope.file"
     >
 
-  <content class=".file.File">
+  <class class=".file.File">
     <require
         permission="zope.View"
         interface=".interfaces.IFile"
@@ -19,7 +19,7 @@
           zope.app.annotation.interfaces.IAttributeAnnotatable
           "
         />
-  </content>
+  </class>
 
   <adapter factory=".browser.Sized"/>
   <adapter factory=".adapters.ReadFileAdapter" />
