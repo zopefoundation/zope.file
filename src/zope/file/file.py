@@ -19,7 +19,7 @@ import cStringIO
 
 import persistent
 
-import zope.app.location.interfaces
+import zope.location.interfaces
 import zope.file.interfaces
 import zope.interface
 
@@ -28,7 +28,7 @@ class File(persistent.Persistent):
 
     zope.interface.implements(
         zope.file.interfaces.IFile,
-        zope.app.location.interfaces.ILocation)
+        zope.location.interfaces.ILocation)
 
     __name__ = None
     __parent__ = None

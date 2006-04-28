@@ -15,8 +15,8 @@
 """
 __docformat__ = "reStructuredText"
 
-import zope.app.size
-import zope.app.size.interfaces
+import zope.size
+import zope.size.interfaces
 import zope.component
 import zope.file.interfaces
 import zope.interface
@@ -25,7 +25,7 @@ import zope.interface
 class Sized(object):
 
     zope.interface.implements(
-        zope.app.size.interfaces.ISized)
+        zope.size.interfaces.ISized)
 
     zope.component.adapts(
         zope.file.interfaces.IFile)
@@ -37,4 +37,4 @@ class Sized(object):
         return "byte", self.context.size
 
     def sizeForDisplay(self):
-        return zope.app.size.byteDisplay(self.context.size)
+        return zope.size.byteDisplay(self.context.size)
