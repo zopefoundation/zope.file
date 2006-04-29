@@ -11,12 +11,12 @@
 #
 ##############################################################################
 from zope import interface, component
-import zope.app.filerepresentation.interfaces
+import zope.filerepresentation.interfaces
 from zope.file import interfaces
 
 class ReadFileAdapter(object):
     component.adapts(interfaces.IFile)
-    interface.implements(zope.app.filerepresentation.interfaces.IReadFile)
+    interface.implements(zope.filerepresentation.interfaces.IReadFile)
 
     def __init__(self, context):
         self.context = context
@@ -32,7 +32,7 @@ class ReadFileAdapter(object):
 
 class WriteFileAdapter(object):
     component.adapts(interfaces.IFile)
-    interface.implements(zope.app.filerepresentation.interfaces.IWriteFile)
+    interface.implements(zope.filerepresentation.interfaces.IWriteFile)
 
     def __init__(self, context):
         self.context = context

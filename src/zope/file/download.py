@@ -17,19 +17,16 @@ __docformat__ = "reStructuredText"
 
 import cStringIO
 
-import zope.app.publisher.interfaces.browser
 import zope.interface
 import zope.mimetype.interfaces
 import zope.publisher.interfaces.browser
 import zope.publisher.http
 
-import zope.app.publisher.interfaces.browser
-
 
 class Download(object):
 
     zope.interface.implements(
-        zope.app.publisher.interfaces.browser.IBrowserView,
+        zope.publisher.interfaces.browser.IBrowserView,
         zope.publisher.interfaces.browser.IBrowserPublisher)
 
     def __init__(self, context, request):
@@ -48,7 +45,7 @@ class Download(object):
 class Inline(object):
 
     zope.interface.implements(
-        zope.app.publisher.interfaces.browser.IBrowserView,
+        zope.publisher.interfaces.browser.IBrowserView,
         zope.publisher.interfaces.browser.IBrowserPublisher)
 
     def __init__(self, context, request):

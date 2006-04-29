@@ -16,7 +16,7 @@
         />
     <implements
         interface="
-          zope.app.annotation.interfaces.IAttributeAnnotatable
+          zope.annotation.interfaces.IAttributeAnnotatable
           "
         />
   </class>

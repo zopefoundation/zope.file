@@ -17,7 +17,7 @@ __docformat__ = "reStructuredText"
 
 import re
 import zope.app.container.interfaces
-import zope.app.event.objectevent
+import zope.lifecycleevent
 import zope.component
 import zope.event
 import zope.file.file
@@ -61,7 +61,7 @@ class Upload(zope.formlib.form.AddForm):
         f = self.request.form["form.data"]
         updateBlob(ob, f)
         zope.event.notify(
-            zope.app.event.objectevent.ObjectCreatedEvent(ob))
+            zope.lifecycleevent.ObjectCreatedEvent(ob))
         self._name = nameFinder(f)
         return ob
 
@@ -127,7 +127,7 @@ class Reupload(zope.formlib.form.Form):
                 parameters["charset"] = new_charset.name
                 context.parameters = parameters
         zope.event.notify(
-            zope.app.event.objectevent.ObjectModifiedEvent(context))
+            zope.lifecycleevent.ObjectModifiedEvent(context))
 
 
 def updateBlob(ob, input):
