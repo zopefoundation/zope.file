@@ -76,7 +76,7 @@ class ContentTypeForm(zope.formlib.form.Form):
 
     encoding_field = zope.formlib.form.Field(
         zope.schema.Choice(
-            __name__=_("encoding"),
+            __name__="encoding",
             title=_("Encoding"),
             description=_("Character data encoding"),
             source=mimetype.source.codecSource,
