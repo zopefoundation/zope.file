@@ -13,7 +13,7 @@ content.  We'll upload a bit of HTML as a sample document::
   >>> sio = StringIO.StringIO("A <sub>little</sub> HTML."
   ...                         "  There's one 8-bit Latin-1 character: \xd8.")
 
-  >>> from zope.testbrowser import Browser
+  >>> from zope.testbrowser.testing import Browser
   >>> browser = Browser()
   >>> browser.addHeader("Authorization", "Basic mgr:mgrpw")
   >>> browser.addHeader("Accept-Language", "en-US")

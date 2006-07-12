@@ -18,6 +18,7 @@ __docformat__ = "reStructuredText"
 import zope.component
 import zope.formlib.form
 import zope.interface
+import zope.lifecycleevent
 import zope.mimetype.interfaces
 import zope.mimetype.source
 import zope.schema
@@ -171,4 +172,4 @@ class ContentTypeForm(zope.formlib.form.Form):
                     parameters["charset"] = new_charset.name
                     context.parameters = parameters
         zope.event.notify(
-            zope.app.event.objectevent.ObjectModifiedEvent(context))
+            zope.lifecycleevent.ObjectModifiedEvent(context))
