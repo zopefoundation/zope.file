@@ -126,8 +126,10 @@ class Reupload(zope.formlib.form.Form):
                 parameters = dict(context.parameters)
                 parameters["charset"] = new_charset.name
                 context.parameters = parameters
+        # these subscribers generally expect an unproxied object.
         zope.event.notify(
-            zope.lifecycleevent.ObjectModifiedEvent(context))
+            zope.lifecycleevent.ObjectModifiedEvent(
+                zope.security.proxy.removeSecurityProxy(context)))
 
 
 def updateBlob(ob, input):

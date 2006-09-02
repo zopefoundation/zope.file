@@ -22,6 +22,7 @@ import zope.lifecycleevent
 import zope.mimetype.interfaces
 import zope.mimetype.source
 import zope.schema
+import zope.security.proxy
 
 from zope import mimetype
 from zope.file.i18n import _
@@ -172,4 +173,5 @@ class ContentTypeForm(zope.formlib.form.Form):
                     parameters["charset"] = new_charset.name
                     context.parameters = parameters
         zope.event.notify(
-            zope.lifecycleevent.ObjectModifiedEvent(context))
+            zope.lifecycleevent.ObjectModifiedEvent(
+                zope.security.proxy.removeSecurityProxy(context)))
