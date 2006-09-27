@@ -15,17 +15,25 @@
 """
 __docformat__ = "reStructuredText"
 
+import os.path
 import unittest
 
 import zope.app.testing.functional
 
+here = os.path.dirname(os.path.realpath(__file__))
+
+ZopeFileLayer = zope.app.testing.functional.ZCMLLayer(
+    os.path.join(here, "ftesting.zcml"), __name__, "ZopeFileLayer")
+
+
+def fromDocFile(path):
+    suite = zope.app.testing.functional.FunctionalDocFileSuite(path)
+    suite.layer = ZopeFileLayer
+    return suite
 
 def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(
-        zope.app.testing.functional.FunctionalDocFileSuite("contenttype.txt"))
-    suite.addTest(
-        zope.app.testing.functional.FunctionalDocFileSuite("download.txt"))
-    suite.addTest(
-        zope.app.testing.functional.FunctionalDocFileSuite("upload.txt"))
-    return suite
+    return unittest.TestSuite([
+        fromDocFile("contenttype.txt"),
+        fromDocFile("download.txt"),
+        fromDocFile("upload.txt"),
+        ])

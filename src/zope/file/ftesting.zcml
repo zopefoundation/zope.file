@@ -1,0 +1,41 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="zc.catalog"
+    >
+
+  <include package="zope.app" />
+  <include package="zope.app.authentication" />
+  <include package="zope.app.server" />
+
+  <include package="zope.mimetype" file="meta.zcml"/>
+  <include package="zope.mimetype"/>
+  <include package="zope.file"/>
+  <include package="zope.formlib"/>
+
+  <!-- Security -->
+
+  <include package="zope.app.securitypolicy" file="meta.zcml" />
+  <include package="zope.app.securitypolicy" />
+
+  <securityPolicy
+      component="zope.app.securitypolicy.zopepolicy.ZopeSecurityPolicy"
+      />
+
+  <role
+      id="zope.Anonymous"
+      title="Everybody"
+      description="All users have this role implicitly"
+      />
+  <role id="zope.Manager" title="Site Manager" />
+
+  <grantAll role="zope.Manager" />
+
+
+  <unauthenticatedPrincipal id="zope.anybody" title="Unauthenticated User" />
+
+  <principal id="zope.mgr" title="Manager" login="mgr" password="mgrpw" />
+
+  <grant role="zope.Manager" principal="zope.mgr" />
+
+</configure>
