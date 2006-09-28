@@ -25,7 +25,6 @@ import zope.formlib.form
 import zope.interface
 import zope.mimetype.event
 import zope.mimetype.interfaces
-import zope.mimetype.source
 import zope.publisher.contenttype
 import zope.schema
 import zope.security.proxy
