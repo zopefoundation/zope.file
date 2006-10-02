@@ -20,45 +20,26 @@ import cStringIO
 import zope.interface
 import zope.mimetype.interfaces
 import zope.publisher.interfaces.browser
+import zope.publisher.browser
 import zope.publisher.http
 
 
-class Download(object):
-
-    zope.interface.implements(
-        zope.publisher.interfaces.browser.IBrowserView,
-        zope.publisher.interfaces.browser.IBrowserPublisher)
-
-    def __init__(self, context, request):
-        self.__parent__ = context
-        self.context = context
-        self.request = request
+class Download(zope.publisher.browser.BrowserView):
 
     def __call__(self):
-        result = DownloadResult(self.context)
-        return result
-
-    def browserDefault(self, request):
-        return self, ()
+        return DownloadResult(self.context, contentDisposition="attachment")
 
 
-class Inline(object):
-
-    zope.interface.implements(
-        zope.publisher.interfaces.browser.IBrowserView,
-        zope.publisher.interfaces.browser.IBrowserPublisher)
-
-    def __init__(self, context, request):
-        self.__parent__ = context
-        self.context = context
-        self.request = request
+class Inline(zope.publisher.browser.BrowserView):
 
     def __call__(self):
-        result = DownloadResult(self.context,contentDisposition="inline")
-        return result
+        return DownloadResult(self.context, contentDisposition="inline")
 
-    def browserDefault(self, request):
-        return self, ()
+
+class Display(zope.publisher.browser.BrowserView):
+
+    def __call__(self):
+        return DownloadResult(self.context)
 
 
 class DownloadResult(object):
@@ -68,7 +49,7 @@ class DownloadResult(object):
         zope.publisher.http.IResult)
 
     def __init__(self, context, contentType=None, downloadName=None,
-                 contentDisposition="attachment"):
+                 contentDisposition=None):
         if not contentType:
             cti = zope.mimetype.interfaces.IContentInfo(context, None)
             if cti is not None:
@@ -77,11 +58,12 @@ class DownloadResult(object):
         self.headers = ("Content-Type", contentType),
 
         downloadName = downloadName or context.__name__
-        if downloadName:
-            contentDisposition += (
-                '; filename="%s"' % downloadName.encode("utf-8")
-                )
-        self.headers += ("Content-Disposition", contentDisposition),
+        if contentDisposition:
+            if downloadName:
+                contentDisposition += (
+                    '; filename="%s"' % downloadName.encode("utf-8")
+                    )
+            self.headers += ("Content-Disposition", contentDisposition),
 
         # This ensures that what's left has no connection to the
         # application/database; ZODB BLOBs will provide a equivalent

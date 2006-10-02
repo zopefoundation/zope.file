@@ -70,6 +70,13 @@
 
   <browser:view
       for=".interfaces.IFile"
+      name="display"
+      class=".download.Display"
+      permission="zope.View"
+      />
+
+  <browser:view
+      for=".interfaces.IFile"
       menu="zmi_views" title="Upload"
       name="edit.html"
       class=".upload.Reupload"

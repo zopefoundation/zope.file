@@ -27,7 +27,7 @@ Headers
 Now, let's create a download result for this file::
 
   >>> from zope.file.download import DownloadResult
-  >>> result = DownloadResult(f)
+  >>> result = DownloadResult(f, contentDisposition='attachment')
 
 Since there's no suggested download filename on the file, the
 Content-Disposition header doesn't specify one, but does indicate that
@@ -47,7 +47,7 @@ If the file object specifies a content type, that's used in the result
 by default::
 
   >>> f.mimeType = "text/plain"
-  >>> result = DownloadResult(f)
+  >>> result = DownloadResult(f, contentDisposition='attachment')
   >>> sorted(result.headers)
   [('Content-Disposition', 'attachment'),
    ('Content-Length', '0'),
@@ -56,7 +56,8 @@ by default::
 Alternatively, a content type can be specified to the result
 constructor::
 
-  >>> result = DownloadResult(f, contentType="text/xml")
+  >>> result = DownloadResult(f, contentType="text/xml",
+  ...                         contentDisposition='attachment')
   >>> sorted(result.headers)
   [('Content-Disposition', 'attachment'),
    ('Content-Length', '0'),
@@ -65,7 +66,7 @@ constructor::
 The filename provided to the browser can be controlled similarly.  If
 the content object provides one, it will be used by default::
 
-  >>> result = DownloadResult(f)
+  >>> result = DownloadResult(f, contentDisposition='attachment')
   >>> sorted(result.headers)
   [('Content-Disposition', 'attachment'),
    ('Content-Length', '0'),
@@ -74,19 +75,28 @@ the content object provides one, it will be used by default::
 Providing an alternate name to the result constructor overrides the
 download name from the file::
 
-  >>> result = DownloadResult(f, downloadName="foo.txt")
+  >>> result = DownloadResult(f, downloadName="foo.txt",
+  ...                         contentDisposition='attachment')
   >>> sorted(result.headers)
   [('Content-Disposition', 'attachment; filename="foo.txt"'),
    ('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
 The default Content-Disposition header can be overridden by providing
-an argument to the DownloadResult constructor:
+an argument to the DownloadResult constructor::
 
   >>> result = DownloadResult(f, contentDisposition="inline")
   >>> sorted(result.headers)
   [('Content-Disposition', 'inline'),
    ('Content-Length', '0'),
+   ('Content-Type', 'text/plain')]
+
+If the `contentDisposition` argument is not provided, none will be
+included in the headers::
+
+  >>> result = DownloadResult(f)
+  >>> sorted(result.headers)
+  [('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
 
@@ -165,10 +175,14 @@ result::
 
 
 The Inline View
------------------
+---------------
 
 In addition, it is sometimes useful to view the data inline instead of
-downloading it. A basic inline view is provided for this use case.
+downloading it.  A basic inline view is provided for this use case.
+Note that browsers may decide not to display the image when this view
+is used and there is not page that it's being loaded into: if this
+view is being referenced directly via the URL, the browser may show
+nothing.
 
   >>> print http("""
   ... GET /abcdefg/@@inline HTTP/1.1
@@ -176,6 +190,24 @@ downloading it. A basic inline view is provided for this use case.
   ... """, handle_errors=False)
   HTTP/1.1 200 Ok
   Content-Disposition: inline; filename="abcdefg"
+  Content-Length: 9
+  Content-Type: text/plain
+  <BLANKLINE>
+  some text
+
+
+The Default Display View
+------------------------
+
+This view is similar to the download and inline views, but no content
+disposition is specified at all.  This lets the browser's default
+handling of the data in the current context to be applied.
+
+  >>> print http("""
+  ... GET /abcdefg/@@display HTTP/1.1
+  ... Authorization: Basic mgr:mgrpw
+  ... """, handle_errors=False)
+  HTTP/1.1 200 Ok
   Content-Length: 9
   Content-Type: text/plain
   <BLANKLINE>
