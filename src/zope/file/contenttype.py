@@ -19,6 +19,7 @@ import zope.component
 import zope.formlib.form
 import zope.interface
 import zope.lifecycleevent
+import zope.mimetype.event
 import zope.mimetype.interfaces
 import zope.mimetype.source
 import zope.schema

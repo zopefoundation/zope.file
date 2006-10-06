@@ -19,7 +19,6 @@ import cStringIO
 
 import zope.interface
 import zope.mimetype.interfaces
-import zope.publisher.interfaces.browser
 import zope.publisher.browser
 import zope.publisher.http
 

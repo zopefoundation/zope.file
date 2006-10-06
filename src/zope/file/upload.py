@@ -22,7 +22,6 @@ import zope.component
 import zope.event
 import zope.file.file
 import zope.formlib.form
-import zope.interface
 import zope.mimetype.event
 import zope.mimetype.interfaces
 import zope.publisher.contenttype
