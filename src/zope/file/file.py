@@ -50,6 +50,10 @@ class File(persistent.Persistent):
             return Reader(self, mode)
         if mode in ("w", "wb"):
             return Writer(self, mode)
+        if mode in ("r+", "r+b", "rb+"):
+            return ReaderPlus(self, mode)
+        if mode in ("w+", "w+b", "wb+"):
+            return WriterPlus(self, mode)
         raise ValueError("unsupported `mode` value")
 
 
@@ -84,6 +88,30 @@ class Accessor(object):
         raise TypeError("%s.%s instance is not picklable"
                         % (cls.__module__, cls.__name__))
 
+    _write = False
+
+    def _get_stream(self):
+        # get the right string io
+        if self._sio is None:
+            self._data = self.__parent__._data
+            # create if we don't have one yet
+            self._sio = cStringIO.StringIO() # cStringIO creates immutable
+            # instance if you pass a string, unlike StringIO :-/
+            if not self._write:
+                self._sio.write(self._data)
+                self._sio.seek(0)
+        elif self._data is not self.__parent__._data:
+            # if the data for the underlying object has changed,
+            # update our view of the data:
+            pos = self._sio.tell()
+            self._data = self.__parent__._data
+            self._sio = cStringIO.StringIO()
+            self._sio.write(self._data)
+            self._sio.seek(pos) # this may seek beyond EOF, but that appears to
+            # be how it is supposed to work, based on experiments.  Writing
+            # will insert NULLs in the previous positions.
+        return self._sio
+
     def _close(self):
         pass
 
@@ -115,29 +143,13 @@ class Reader(Accessor):
         else:
             return self._sio.tell()
 
-    def _get_stream(self):
-        # get the right string io
-        if self._sio is None:
-            # create if we don't have one yet
-            self._data = self.__parent__._data
-            self._sio = cStringIO.StringIO(self._data)
-        elif self._data is not self.__parent__._data:
-            # if the data for the underlying object has changed,
-            # update our view of the data:
-            pos = self._sio.tell()
-            self._data = self.__parent__._data
-            if pos > len(self._data):
-                # need to check if this is really right
-                pos = len(self._data)
-            self._sio = cStringIO.StringIO(self._data)
-            self._sio.seek(pos)
-        return self._sio
-
 
 class Writer(Accessor):
 
     zope.interface.implements(
         zope.file.interfaces.IFileWriter)
+
+    _write = True
 
     def flush(self):
         if self._closed:
@@ -145,16 +157,19 @@ class Writer(Accessor):
         if self._sio is not None:
             self.__parent__._data = self._sio.getvalue()
             self.__parent__.size = len(self.__parent__._data)
+            self._data = self.__parent__._data
 
     def write(self, data):
         if self._closed:
             raise ValueError("I/O operation on closed file")
         self._get_stream().write(data)
 
-    def _get_stream(self):
-        if self._sio is None:
-            self._sio = cStringIO.StringIO()
-        return self._sio
-
     def _close(self):
         self.flush()
+
+class WriterPlus(Writer, Reader):
+    pass
+
+class ReaderPlus(Writer, Reader):
+
+    _write = False

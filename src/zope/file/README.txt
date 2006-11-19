@@ -196,3 +196,38 @@ exception::
   >>> r.tell()
   Traceback (most recent call last):
   ValueError: I/O operation on closed file
+
+The file object also supports the '+' mode--both reading and writing
+simultaneously.  This can be convenient for allowing it to be used with
+tools (such as the TIFF PIL plugin as of this writing) with features
+that expect files in this mode.
+
+  >>> rw = f.open('r+')
+  >>> rw.tell()
+  0L
+  >>> rw.read()
+  'some text more text still more woohoo!'
+  >>> rw.tell()
+  38
+  >>> rw.write(' yippee!')
+  >>> rw.seek(31)
+  >>> rw.read()
+  'woohoo! yippee!'
+  >>> rw.seek(31)
+  >>> rw.write('THE END')
+  >>> rw.seek(0)
+  >>> rw.read()
+  'some text more text still more THE END yippee!'
+  >>> rw.close()
+  >>> rw = f.open('w+')
+  >>> rw.tell()
+  0L
+  >>> rw.read()
+  ''
+  >>> rw.write('hi.')
+  >>> rw.tell()
+  3
+  >>> rw.seek(0)
+  >>> rw.read()
+  'hi.'
+  >>> rw.close()
