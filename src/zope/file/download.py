@@ -57,7 +57,7 @@ class DownloadResult(object):
         return res
 
     def __init__(self, context, contentType=None, downloadName=None,
-                 contentDisposition=None):
+                 contentDisposition=None, contentLength=None):
         if not contentType:
             cti = zope.mimetype.interfaces.IContentInfo(context, None)
             if cti is not None:
@@ -73,7 +73,9 @@ class DownloadResult(object):
                     )
             self.headers += ("Content-Disposition", contentDisposition),
 
-        self.headers += ("Content-Length", str(context.size)),
+        if contentLength is None:
+            contentLength = context.size
+        self.headers += ("Content-Length", str(contentLength)),
         self.body = bodyIterator(self.getFile(context))
 
 
