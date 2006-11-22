@@ -47,6 +47,15 @@ class DownloadResult(object):
     zope.interface.implements(
         zope.publisher.http.IResult)
 
+    def getFile(self, context):
+        # This ensures that what's left has no connection to the
+        # application/database; ZODB BLOBs will provide a equivalent
+        # feature once available.
+        f = context.open('rb')
+        res = cStringIO.StringIO(f.read())
+        f.close()
+        return res
+
     def __init__(self, context, contentType=None, downloadName=None,
                  contentDisposition=None):
         if not contentType:
@@ -64,13 +73,8 @@ class DownloadResult(object):
                     )
             self.headers += ("Content-Disposition", contentDisposition),
 
-        # This ensures that what's left has no connection to the
-        # application/database; ZODB BLOBs will provide a equivalent
-        # feature once available.
-        #
-        data = context.open("rb").read()
         self.headers += ("Content-Length", str(context.size)),
-        self.body = bodyIterator(cStringIO.StringIO(data))
+        self.body = bodyIterator(self.getFile(context))
 
 
 CHUNK_SIZE = 64 * 1024
