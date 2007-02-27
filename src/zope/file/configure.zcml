@@ -14,6 +14,10 @@
         permission="zope.ManageContent"
         set_attributes="mimeType parameters"
         />
+    <require
+        permission="zope.ManageContent"
+        attributes="openDetached"
+        />
     <implements
         interface="
           zope.annotation.interfaces.IAttributeAnnotatable
@@ -25,23 +29,22 @@
   <adapter factory=".adapters.ReadFileAdapter" />
   <adapter factory=".adapters.WriteFileAdapter" />
 
-  <!-- set up permissions for the accessor objects -->
-
-  <class class=".file.Reader">
+  <class class="ZODB.Blobs.Blob.BlobFile">
     <require
         permission="zope.View"
-        interface=".interfaces.IFileReader"
-        />
-  </class>
-
-  <class class=".file.Writer">
-    <require
-        permission="zope.View"
-        attributes="mode"
+        attributes="read openDetached"
         />
     <require
         permission="zope.ManageContent"
-        attributes="close flush write"
+        attributes="write close"
+        />
+  </class>
+
+
+  <class class=".file.Writer">
+    <require
+        permission="zope.ManageContent"
+        attributes="write close"
         />
   </class>
 

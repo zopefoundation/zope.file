@@ -42,6 +42,22 @@ class IFile(zope.mimetype.interfaces.IContentTypeAware):
         All readers and writers operate in 'binary' mode.
 
         """
+    def open():
+        """Return an object providing access to the file data.
+
+        Allowed values for `mode` are 'r' and 'rb' (read); 'w' and
+        'wb' (write); and 'w+', 'w+b', 'wb+', 'r+', 'r+b', and 'rb+' (both).
+        Other values cause `ValueError` to be raised.
+
+        If the file is opened in read mode, an `IFileReader` is
+        returned; if opened in write mode, an `IFileWriter` is
+        returned; if in read/write, an object that implements both is
+        returned.
+
+        All readers and writers operate in 'binary' mode.
+
+        """
+
 
     size = zope.schema.Int(
         title=_("Size"),

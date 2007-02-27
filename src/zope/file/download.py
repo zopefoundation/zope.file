@@ -21,6 +21,7 @@ import zope.interface
 import zope.mimetype.interfaces
 import zope.publisher.browser
 import zope.publisher.http
+from zope.proxy import removeAllProxies
 
 
 class Download(zope.publisher.browser.BrowserView):
@@ -48,13 +49,7 @@ class DownloadResult(object):
         zope.publisher.http.IResult)
 
     def getFile(self, context):
-        # This ensures that what's left has no connection to the
-        # application/database; ZODB BLOBs will provide a equivalent
-        # feature once available.
-        f = context.open('rb')
-        res = cStringIO.StringIO(f.read())
-        f.close()
-        return res
+        return removeAllProxies(context.openDetached())
 
     def __init__(self, context, contentType=None, downloadName=None,
                  contentDisposition=None, contentLength=None):

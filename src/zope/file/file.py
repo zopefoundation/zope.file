@@ -15,6 +15,7 @@
 """
 __docformat__ = "reStructuredText"
 
+import sys
 import cStringIO
 
 import persistent
@@ -23,6 +24,7 @@ import zope.location.interfaces
 import zope.file.interfaces
 import zope.interface
 
+from ZODB.Blobs.Blob import Blob
 
 class File(persistent.Persistent):
 
@@ -44,17 +46,30 @@ class File(persistent.Persistent):
         else:
             parameters = dict(parameters)
         self.parameters = parameters
+        self._data = Blob()
+        fp = self._data.open('w')
+        fp.write('')
+        fp.close()
 
     def open(self, mode="r"):
-        if mode in ("r", "rb"):
+        if mode.startswith("r"):
             return Reader(self, mode)
-        if mode in ("w", "wb"):
+        if mode.startswith("w"):
             return Writer(self, mode)
-        if mode in ("r+", "r+b", "rb+"):
-            return ReaderPlus(self, mode)
-        if mode in ("w+", "w+b", "wb+"):
-            return WriterPlus(self, mode)
         raise ValueError("unsupported `mode` value")
+
+    def openDetached(self):
+        return self._data.openDetached()
+
+    @property
+    def size(self):
+        if self._data == "":
+            return 0
+        reader = self.open()
+        reader.seek(0,2)
+        size = int(reader.tell())
+        reader.close()
+        return size
 
 
 class Accessor(object):
@@ -62,6 +77,8 @@ class Accessor(object):
 
     _closed = False
     _sio = None
+    _write = False
+    mode = None
 
     # XXX Accessor objects need to have an __parent__ to support the
     # security machinery, but they aren't ILocation instances since
@@ -74,13 +91,12 @@ class Accessor(object):
     def __init__(self, file, mode):
         self.__parent__ = file
         self.mode = mode
+        self._stream = self.__parent__._data.open(mode)
 
     def close(self):
         if not self._closed:
             self._close()
             self._closed = True
-            if "_sio" in self.__dict__:
-                del self._sio
 
     def __getstate__(self):
         """Make sure the accessors can't be stored in ZODB."""
@@ -88,29 +104,8 @@ class Accessor(object):
         raise TypeError("%s.%s instance is not picklable"
                         % (cls.__module__, cls.__name__))
 
-    _write = False
-
     def _get_stream(self):
-        # get the right string io
-        if self._sio is None:
-            self._data = self.__parent__._data
-            # create if we don't have one yet
-            self._sio = cStringIO.StringIO() # cStringIO creates immutable
-            # instance if you pass a string, unlike StringIO :-/
-            if not self._write:
-                self._sio.write(self._data)
-                self._sio.seek(0)
-        elif self._data is not self.__parent__._data:
-            # if the data for the underlying object has changed,
-            # update our view of the data:
-            pos = self._sio.tell()
-            self._data = self.__parent__._data
-            self._sio = cStringIO.StringIO()
-            self._sio.write(self._data)
-            self._sio.seek(pos) # this may seek beyond EOF, but that appears to
-            # be how it is supposed to work, based on experiments.  Writing
-            # will insert NULLs in the previous positions.
-        return self._sio
+        return self._stream
 
     def _close(self):
         pass
@@ -138,10 +133,10 @@ class Reader(Accessor):
     def tell(self):
         if self._closed:
             raise ValueError("I/O operation on closed file")
-        if self._sio is None:
-            return 0L
-        else:
-            return self._sio.tell()
+        return int(self._get_stream().tell())
+
+    def _close(self):
+        self._get_stream().close()
 
 
 class Writer(Accessor):
@@ -154,22 +149,13 @@ class Writer(Accessor):
     def flush(self):
         if self._closed:
             raise ValueError("I/O operation on closed file")
-        if self._sio is not None:
-            self.__parent__._data = self._sio.getvalue()
-            self.__parent__.size = len(self.__parent__._data)
-            self._data = self.__parent__._data
-
+        self._get_stream().flush()
+    
     def write(self, data):
         if self._closed:
             raise ValueError("I/O operation on closed file")
         self._get_stream().write(data)
 
     def _close(self):
-        self.flush()
+        self._get_stream().close()
 
-class WriterPlus(Writer, Reader):
-    pass
-
-class ReaderPlus(Writer, Reader):
-
-    _write = False

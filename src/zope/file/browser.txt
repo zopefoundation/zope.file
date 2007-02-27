@@ -29,7 +29,7 @@ Let's add some content to the file::
 
   >>> w = f.open('wb')
   >>> w.write("some text")
-  >>> w.flush()
+  >>> w.close()
 
 The sized adapter now reflects the updated size::
 
@@ -40,11 +40,12 @@ The sized adapter now reflects the updated size::
 
 Let's try again with a larger file size::
 
-  >>> w.write("x" * 1024*1024)
-  >>> w.flush()
+  >>> w = f.open('w')
+  >>> w.write("x" * (1024*1024+10))
+  >>> w.close()
 
   >>> s.sizeForSorting()
-  ('byte', 1048585)
+  ('byte', 1048586)
   >>> m = s.sizeForDisplay()
   >>> m
   u'${size} MB'
@@ -53,11 +54,12 @@ Let's try again with a larger file size::
 
 And still a bigger size::
 
-  >>> w.write("x" * 512*1024)
+  >>> w = f.open('w')
+  >>> w.write("x" * 3*512*1024)
   >>> w.close()
 
   >>> s.sizeForSorting()
-  ('byte', 1572873)
+  ('byte', 1572864)
   >>> m = s.sizeForDisplay()
   >>> m
   u'${size} MB'
