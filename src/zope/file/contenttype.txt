@@ -58,6 +58,7 @@ information::
 Let's now set the encoding value to an old favorite, Latin-1::
 
   >>> ctrl.value = ["iso-8859-1"]
+  >>> browser.handleErrors = False
   >>> browser.getControl("Save").click()
 
 We now see the updated value in the form, and can check the value in

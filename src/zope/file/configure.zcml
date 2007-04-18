@@ -8,7 +8,8 @@
   <class class=".file.File">
     <require
         permission="zope.View"
-        interface=".interfaces.IFile"
+        interface="zope.mimetype.interfaces.IContentTypeAware"
+        attributes="size"
         />
     <require
         permission="zope.ManageContent"
@@ -16,7 +17,7 @@
         />
     <require
         permission="zope.ManageContent"
-        attributes="openDetached"
+        attributes="openDetached open"
         />
     <implements
         interface="
@@ -34,14 +35,6 @@
         permission="zope.View"
         attributes="read openDetached"
         />
-    <require
-        permission="zope.ManageContent"
-        attributes="write close"
-        />
-  </class>
-
-
-  <class class=".file.Writer">
     <require
         permission="zope.ManageContent"
         attributes="write close"

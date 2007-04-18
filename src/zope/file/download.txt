@@ -9,8 +9,9 @@ This relies on browser support for the Content-Disposition header.
 The download support is provided by two distinct objects:  A view that
 provides the download support using the information in the content
 object, and a result object that can be used to implement a file
-download by other views.  The result object can be used to override
-the content-type or the filename suggested to the browser.
+download by other views.  The view can override the content-type or the
+filename suggested to the browser using the standard IResponse.setHeader
+method.
 
 Note that result objects are intended to be used once and then
 discarded.
@@ -24,17 +25,18 @@ download support::
 Headers
 -------
 
-Now, let's create a download result for this file::
+Now, let's get the headers for this file.  We use a utility function called
+``getHeaders``::
 
-  >>> from zope.file.download import DownloadResult
-  >>> result = DownloadResult(f, contentDisposition='attachment')
+  >>> from zope.file.download import getHeaders
+  >>> headers = getHeaders(f, contentDisposition='attachment')
 
 Since there's no suggested download filename on the file, the
 Content-Disposition header doesn't specify one, but does indicate that
 the response body be treated as a file to save rather than to apply
 the default handler for the content type.
 
-  >>> sorted(result.headers)
+  >>> sorted(headers)
   [('Content-Disposition', 'attachment'),
    ('Content-Length', '0'),
    ('Content-Type', 'application/octet-stream')]
@@ -43,22 +45,21 @@ the default handler for the content type.
 Note that a default content type of 'application/octet-stream' is
 used.
 
-If the file object specifies a content type, that's used in the result
+If the file object specifies a content type, that's used in the headers
 by default::
 
   >>> f.mimeType = "text/plain"
-  >>> result = DownloadResult(f, contentDisposition='attachment')
-  >>> sorted(result.headers)
+  >>> headers = getHeaders(f, contentDisposition='attachment')
+  >>> sorted(headers)
   [('Content-Disposition', 'attachment'),
    ('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
-Alternatively, a content type can be specified to the result
-constructor::
+Alternatively, a content type can be specified to ``getHeaders``::
 
-  >>> result = DownloadResult(f, contentType="text/xml",
-  ...                         contentDisposition='attachment')
-  >>> sorted(result.headers)
+  >>> headers = getHeaders(f, contentType="text/xml",
+  ...                      contentDisposition='attachment')
+  >>> sorted(headers)
   [('Content-Disposition', 'attachment'),
    ('Content-Length', '0'),
    ('Content-Type', 'text/xml')]
@@ -66,27 +67,27 @@ constructor::
 The filename provided to the browser can be controlled similarly.  If
 the content object provides one, it will be used by default::
 
-  >>> result = DownloadResult(f, contentDisposition='attachment')
-  >>> sorted(result.headers)
+  >>> headers = getHeaders(f, contentDisposition='attachment')
+  >>> sorted(headers)
   [('Content-Disposition', 'attachment'),
    ('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
-Providing an alternate name to the result constructor overrides the
-download name from the file::
+Providing an alternate name to ``getHeaders`` overrides the download
+name from the file::
 
-  >>> result = DownloadResult(f, downloadName="foo.txt",
-  ...                         contentDisposition='attachment')
-  >>> sorted(result.headers)
+  >>> headers = getHeaders(f, downloadName="foo.txt",
+  ...                      contentDisposition='attachment')
+  >>> sorted(headers)
   [('Content-Disposition', 'attachment; filename="foo.txt"'),
    ('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
 The default Content-Disposition header can be overridden by providing
-an argument to the DownloadResult constructor::
+an argument to ``getHeaders``::
 
-  >>> result = DownloadResult(f, contentDisposition="inline")
-  >>> sorted(result.headers)
+  >>> headers = getHeaders(f, contentDisposition="inline")
+  >>> sorted(headers)
   [('Content-Disposition', 'inline'),
    ('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
@@ -94,8 +95,8 @@ an argument to the DownloadResult constructor::
 If the `contentDisposition` argument is not provided, none will be
 included in the headers::
 
-  >>> result = DownloadResult(f)
-  >>> sorted(result.headers)
+  >>> headers = getHeaders(f)
+  >>> sorted(headers)
   [('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
@@ -103,9 +104,12 @@ included in the headers::
 Body
 ----
 
-Since there's no data in this file, there are no body chunks:
+We use DownloadResult to deliver the content to the browser.  Since
+there's no data in this file, there are no body chunks:
 
-  >>> list(result.body)
+  >>> from zope.file.download import DownloadResult
+  >>> result = DownloadResult(f)
+  >>> list(result)
   []
 
 We still need to see how non-empty files are handled.  Let's write
@@ -114,39 +118,42 @@ some data to our file object::
   >>> w = f.open("wb")
   >>> w.write("some text")
   >>> w.flush()
+  >>> w.close()
 
 Now we can create a result object and see if we get the data we
 expect::
 
   >>> result = DownloadResult(f)
-  >>> L = list(result.body)
+  >>> L = list(result)
   >>> "".join(L)
   'some text'
 
 If the body content is really large, the iterator may provide more
 than one chunk of data::
 
+  >>> w = f.open("wb")
   >>> w.write("*" * 1024 * 1024)
   >>> w.flush()
+  >>> w.close()
 
   >>> result = DownloadResult(f)
-  >>> L = list(result.body)
+  >>> L = list(result)
   >>> len(L) > 1
   True
 
 Once iteration over the body has completed, further iteration will not
 yield additional data::
 
-  >>> list(result.body)
+  >>> list(result)
   []
 
 
 The Download View
 -----------------
 
-Now that we've seen the result object, let's take a look at the basic
-download view that uses it.  We'll need to add a file object where we
-can get to it using a browser::
+Now that we've seen the ``getHeaders`` function and the result object,
+let's take a look at the basic download view that uses them.  We'll need
+to add a file object where we can get to it using a browser::
 
   >>> f = File()
   >>> f.mimeType = "text/plain"

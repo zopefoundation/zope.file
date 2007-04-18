@@ -18,16 +18,94 @@ __docformat__ = "reStructuredText"
 import os.path
 import unittest
 
+import shutil
+import tempfile
+
+import transaction
+from ZODB.DB import DB
+from ZODB.DemoStorage import DemoStorage
+from ZODB.Blobs.BlobStorage import BlobStorage
+from zope.testing import doctest
 import zope.app.testing.functional
+from zope.app.component.hooks import setSite
 
 here = os.path.dirname(os.path.realpath(__file__))
 
-ZopeFileLayer = zope.app.testing.functional.ZCMLLayer(
+class FunctionalBlobTestSetup(zope.app.testing.functional.FunctionalTestSetup):
+
+    temp_dir_name = None
+
+    def setUp(self):
+        """Prepares for a functional test case."""
+        # Tear down the old demo storage (if any) and create a fresh one
+        transaction.abort()
+        self.db.close()
+        storage = DemoStorage("Demo Storage", self.base_storage)
+        # make a dir
+        temp_dir_name = self.temp_dir_name = tempfile.mkdtemp()
+        # wrap storage with BlobStorage
+        storage = BlobStorage(temp_dir_name, storage)
+        self.db = self.app.db = DB(storage)
+        self.connection = None
+
+    def tearDown(self):
+        """Cleans up after a functional test case."""
+        transaction.abort()
+        if self.connection:
+            self.connection.close()
+            self.connection = None
+        self.db.close()
+        # del dir named '__blob_test__%s' % self.name
+        if self.temp_dir_name is not None:
+            shutil.rmtree(self.temp_dir_name, True)
+            self.temp_dir_name = None
+        setSite(None)
+
+class ZCMLLayer(zope.app.testing.functional.ZCMLLayer):
+
+    def setUp(self):
+        self.setup = FunctionalBlobTestSetup(self.config_file)
+
+def FunctionalBlobDocFileSuite(*paths, **kw):
+    globs = kw.setdefault('globs', {})
+    globs['http'] = zope.app.testing.functional.HTTPCaller()
+    globs['getRootFolder'] = zope.app.testing.functional.getRootFolder
+    globs['sync'] = zope.app.testing.functional.sync
+
+    kw['package'] = doctest._normalize_module(kw.get('package'))
+
+    kwsetUp = kw.get('setUp')
+    def setUp(test):
+        FunctionalBlobTestSetup().setUp()
+
+        if kwsetUp is not None:
+            kwsetUp(test)
+    kw['setUp'] = setUp
+
+    kwtearDown = kw.get('tearDown')
+    def tearDown(test):
+        if kwtearDown is not None:
+            kwtearDown(test)
+        FunctionalBlobTestSetup().tearDown()
+    kw['tearDown'] = tearDown
+
+    if 'optionflags' not in kw:
+        old = doctest.set_unittest_reportflags(0)
+        doctest.set_unittest_reportflags(old)
+        kw['optionflags'] = (old
+                             | doctest.ELLIPSIS
+                             | doctest.REPORT_NDIFF
+                             | doctest.NORMALIZE_WHITESPACE)
+
+    suite = doctest.DocFileSuite(*paths, **kw)
+    suite.layer = zope.app.testing.functional.Functional
+    return suite
+
+ZopeFileLayer = ZCMLLayer(
     os.path.join(here, "ftesting.zcml"), __name__, "ZopeFileLayer")
 
-
 def fromDocFile(path):
-    suite = zope.app.testing.functional.FunctionalDocFileSuite(path)
+    suite = FunctionalBlobDocFileSuite(path)
     suite.layer = ZopeFileLayer
     return suite
 

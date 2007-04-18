@@ -34,30 +34,20 @@ class IFile(zope.mimetype.interfaces.IContentTypeAware):
         'wb' (write); and 'w+', 'w+b', 'wb+', 'r+', 'r+b', and 'rb+' (both).
         Other values cause `ValueError` to be raised.
 
-        If the file is opened in read mode, an `IFileReader` is
-        returned; if opened in write mode, an `IFileWriter` is
+        If the file is opened in read mode, an object with an API (but
+        not necessarily interface) of `IFileReader` is returned; if
+        opened in write mode, an object with an API of `IFileWriter` is
         returned; if in read/write, an object that implements both is
         returned.
 
         All readers and writers operate in 'binary' mode.
 
         """
-    def open():
-        """Return an object providing access to the file data.
-
-        Allowed values for `mode` are 'r' and 'rb' (read); 'w' and
-        'wb' (write); and 'w+', 'w+b', 'wb+', 'r+', 'r+b', and 'rb+' (both).
-        Other values cause `ValueError` to be raised.
-
-        If the file is opened in read mode, an `IFileReader` is
-        returned; if opened in write mode, an `IFileWriter` is
-        returned; if in read/write, an object that implements both is
-        returned.
-
-        All readers and writers operate in 'binary' mode.
-
+    def openDetached():
+        """Return file data disconnected from database connection.
+        
+        Read access only.
         """
-
 
     size = zope.schema.Int(
         title=_("Size"),
@@ -66,6 +56,9 @@ class IFile(zope.mimetype.interfaces.IContentTypeAware):
         required=True,
         )
 
+
+# The remaining interfaces below serve only to document the kind of APIs
+# to be expected, as described in IFile.open above.
 
 class IFileAccessor(zope.interface.Interface):
     """Base accessor for `IFileReader` and `IFileWriter`."""

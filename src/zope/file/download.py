@@ -20,45 +20,40 @@ import cStringIO
 import zope.interface
 import zope.mimetype.interfaces
 import zope.publisher.browser
-import zope.publisher.http
-from zope.proxy import removeAllProxies
-
+import zope.publisher.interfaces.http
+import zope.security.proxy
 
 class Download(zope.publisher.browser.BrowserView):
 
     def __call__(self):
-        return DownloadResult(self.context, contentDisposition="attachment")
+        for k, v in getHeaders(self.context, contentDisposition="attachment"):
+            self.request.response.setHeader(k, v)
+        return DownloadResult(self.context)
 
 
 class Inline(zope.publisher.browser.BrowserView):
 
     def __call__(self):
-        return DownloadResult(self.context, contentDisposition="inline")
+        for k, v in getHeaders(self.context, contentDisposition="inline"):
+            self.request.response.setHeader(k, v)
+        return DownloadResult(self.context)
 
 
 class Display(zope.publisher.browser.BrowserView):
 
     def __call__(self):
+        for k, v in getHeaders(self.context):
+            self.request.response.setHeader(k, v)
         return DownloadResult(self.context)
 
-
-class DownloadResult(object):
-    """Result object for a download request."""
-
-    zope.interface.implements(
-        zope.publisher.http.IResult)
-
-    def getFile(self, context):
-        return removeAllProxies(context.openDetached())
-
-    def __init__(self, context, contentType=None, downloadName=None,
-                 contentDisposition=None, contentLength=None):
+def getHeaders(context, contentType=None, downloadName=None,
+               contentDisposition=None, contentLength=None):
         if not contentType:
             cti = zope.mimetype.interfaces.IContentInfo(context, None)
             if cti is not None:
                 contentType = cti.contentType
         contentType = contentType or "application/octet-stream"
-        self.headers = ("Content-Type", contentType),
+        headers = ("Content-Type", contentType),
 
         downloadName = downloadName or context.__name__
         if contentDisposition:
@@ -66,13 +61,24 @@ class DownloadResult(object):
                 contentDisposition += (
                     '; filename="%s"' % downloadName.encode("utf-8")
                     )
-            self.headers += ("Content-Disposition", contentDisposition),
+            headers += ("Content-Disposition", contentDisposition),
 
         if contentLength is None:
             contentLength = context.size
-        self.headers += ("Content-Length", str(contentLength)),
-        self.body = bodyIterator(self.getFile(context))
+        headers += ("Content-Length", str(contentLength)),
+        return headers
 
+class DownloadResult(object):
+    """Result object for a download request."""
+
+    zope.interface.implements(zope.publisher.interfaces.http.IResult)
+
+    def __init__(self, context):
+        self._iter = bodyIterator(
+            zope.security.proxy.removeSecurityProxy(context.openDetached()))
+
+    def __iter__(self):
+        return self._iter
 
 CHUNK_SIZE = 64 * 1024
 
