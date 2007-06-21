@@ -27,7 +27,7 @@ Let's do some imports and create a new file object::
 
 Let's add some content to the file::
 
-  >>> w = f.open('wb')
+  >>> w = f.open('w')
   >>> w.write("some text")
   >>> w.close()
 

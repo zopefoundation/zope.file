@@ -30,9 +30,8 @@ class IFile(zope.mimetype.interfaces.IContentTypeAware):
     def open(mode="r"):
         """Return an object providing access to the file data.
 
-        Allowed values for `mode` are 'r' and 'rb' (read); 'w' and
-        'wb' (write); and 'w+', 'w+b', 'wb+', 'r+', 'r+b', and 'rb+' (both).
-        Other values cause `ValueError` to be raised.
+        Allowed values for `mode` are 'r' (read); 'w' (write); 'a' (append) and
+        'r+' (read/write).  Other values cause `ValueError` to be raised.
 
         If the file is opened in read mode, an object with an API (but
         not necessarily interface) of `IFileReader` is returned; if
@@ -43,9 +42,10 @@ class IFile(zope.mimetype.interfaces.IContentTypeAware):
         All readers and writers operate in 'binary' mode.
 
         """
+
     def openDetached():
         """Return file data disconnected from database connection.
-        
+
         Read access only.
         """
 

@@ -9,6 +9,7 @@ setup(
     include_package_data=True,
     zip_safe = False,
     install_requires=['setuptools',
+                      'ZODB3>=3.8.0b1',
                       'zope.app.appsetup',
                       'zope.app.publication',
                       'zope.app.wsgi',

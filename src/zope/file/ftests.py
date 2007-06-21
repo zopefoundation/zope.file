@@ -24,7 +24,7 @@ import tempfile
 import transaction
 from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
-from ZODB.Blobs.BlobStorage import BlobStorage
+from ZODB.blob import BlobStorage
 from zope.testing import doctest
 import zope.app.testing.functional
 from zope.app.component.hooks import setSite

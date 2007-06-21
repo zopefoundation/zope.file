@@ -157,6 +157,6 @@ def updateBlob(ob, input):
     else:
         ob.mimeType = mimeType
         ob.parameters = {}
-    w = ob.open("wb")
+    w = ob.open("w")
     w.write(data)
     w.close()

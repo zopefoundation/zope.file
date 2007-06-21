@@ -43,12 +43,13 @@ The object supports efficient upload and download by providing all
 access to content data through accessor objects that provide (subsets
 of) Python's file API.
 
-A file that hasn't been written to is empty.  We can get a reader by
-calling `open()`::
+A file that hasn't been written to is empty.  We can get a reader by calling
+`open()`. Note that all blobs are binary, thus the mode always contains a
+'b'::
 
   >>> r = f.open("r")
   >>> r.mode
-  'r'
+  'rb'
 
 The `read()` method can be called with a non-negative integer argument
 to specify how many bytes to read, or with a negative or omitted
@@ -76,7 +77,7 @@ Data is added by using a writer, which is also created using the
 
   >>> w = f.open("w")
   >>> w.mode
-  'w'
+  'wb'
 
 The `write()` method is used to add data to the file, but note that
 the data may be buffered in the writer::

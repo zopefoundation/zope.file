@@ -51,7 +51,7 @@ def validateCodecUse(file, iface, codec, codec_field):
         if iface.extends(mimetype.interfaces.IContentTypeEncoded):
             # Need to test that this codec can be used for this
             # document:
-            f = file.open("rb")
+            f = file.open("r")
             content_data = f.read()
             f.close()
             try:

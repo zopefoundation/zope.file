@@ -24,7 +24,7 @@ import zope.location.interfaces
 import zope.file.interfaces
 import zope.interface
 
-from ZODB.Blobs.Blob import Blob
+from ZODB.blob import Blob
 
 class File(persistent.Persistent):
 
@@ -55,7 +55,7 @@ class File(persistent.Persistent):
         return self._data.open(mode)
 
     def openDetached(self):
-        return self._data.openDetached()
+        return file(self._data.committed(), 'rb')
 
     @property
     def size(self):

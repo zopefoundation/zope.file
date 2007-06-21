@@ -17,7 +17,7 @@
         />
     <require
         permission="zope.ManageContent"
-        attributes="openDetached open"
+        attributes="open openDetached"
         />
     <implements
         interface="
@@ -30,10 +30,10 @@
   <adapter factory=".adapters.ReadFileAdapter" />
   <adapter factory=".adapters.WriteFileAdapter" />
 
-  <class class="ZODB.Blobs.Blob.BlobFile">
+  <class class="ZODB.blob.BlobFile">
     <require
         permission="zope.View"
-        attributes="read openDetached"
+        attributes="read"
         />
     <require
         permission="zope.ManageContent"

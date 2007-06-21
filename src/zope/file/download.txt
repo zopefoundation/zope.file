@@ -19,8 +19,11 @@ discarded.
 Let's start by creating a file object we can use to demonstrate the
 download support::
 
+  >>> import transaction
   >>> from zope.file.file import File
   >>> f = File()
+  >>> getRootFolder()['file'] = f
+  >>> transaction.commit()
 
 Headers
 -------
@@ -34,10 +37,10 @@ Now, let's get the headers for this file.  We use a utility function called
 Since there's no suggested download filename on the file, the
 Content-Disposition header doesn't specify one, but does indicate that
 the response body be treated as a file to save rather than to apply
-the default handler for the content type.
+the default handler for the content type::
 
   >>> sorted(headers)
-  [('Content-Disposition', 'attachment'),
+  [('Content-Disposition', 'attachment; filename="file"'),
    ('Content-Length', '0'),
    ('Content-Type', 'application/octet-stream')]
 
@@ -51,7 +54,7 @@ by default::
   >>> f.mimeType = "text/plain"
   >>> headers = getHeaders(f, contentDisposition='attachment')
   >>> sorted(headers)
-  [('Content-Disposition', 'attachment'),
+  [('Content-Disposition', 'attachment; filename="file"'),
    ('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
@@ -60,7 +63,7 @@ Alternatively, a content type can be specified to ``getHeaders``::
   >>> headers = getHeaders(f, contentType="text/xml",
   ...                      contentDisposition='attachment')
   >>> sorted(headers)
-  [('Content-Disposition', 'attachment'),
+  [('Content-Disposition', 'attachment; filename="file"'),
    ('Content-Length', '0'),
    ('Content-Type', 'text/xml')]
 
@@ -69,7 +72,7 @@ the content object provides one, it will be used by default::
 
   >>> headers = getHeaders(f, contentDisposition='attachment')
   >>> sorted(headers)
-  [('Content-Disposition', 'attachment'),
+  [('Content-Disposition', 'attachment; filename="file"'),
    ('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
@@ -88,7 +91,7 @@ an argument to ``getHeaders``::
 
   >>> headers = getHeaders(f, contentDisposition="inline")
   >>> sorted(headers)
-  [('Content-Disposition', 'inline'),
+  [('Content-Disposition', 'inline; filename="file"'),
    ('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
@@ -105,8 +108,9 @@ Body
 ----
 
 We use DownloadResult to deliver the content to the browser.  Since
-there's no data in this file, there are no body chunks:
-
+there's no data in this file, there are no body chunks::
+    
+  >>> transaction.commit()
   >>> from zope.file.download import DownloadResult
   >>> result = DownloadResult(f)
   >>> list(result)
@@ -115,10 +119,11 @@ there's no data in this file, there are no body chunks:
 We still need to see how non-empty files are handled.  Let's write
 some data to our file object::
 
-  >>> w = f.open("wb")
+  >>> w = f.open("w")
   >>> w.write("some text")
   >>> w.flush()
   >>> w.close()
+  >>> transaction.commit()
 
 Now we can create a result object and see if we get the data we
 expect::
@@ -131,10 +136,11 @@ expect::
 If the body content is really large, the iterator may provide more
 than one chunk of data::
 
-  >>> w = f.open("wb")
+  >>> w = f.open("w")
   >>> w.write("*" * 1024 * 1024)
   >>> w.flush()
   >>> w.close()
+  >>> transaction.commit()
 
   >>> result = DownloadResult(f)
   >>> L = list(result)
@@ -160,10 +166,10 @@ to add a file object where we can get to it using a browser::
   >>> w = f.open("w")
   >>> w.write("some text")
   >>> w.close()
+  >>> transaction.commit()
 
   >>> getRootFolder()["abcdefg"] = f
 
-  >>> import transaction
   >>> transaction.commit()
 
 Now, let's request the download view of the file object and check the
@@ -189,7 +195,7 @@ downloading it.  A basic inline view is provided for this use case.
 Note that browsers may decide not to display the image when this view
 is used and there is not page that it's being loaded into: if this
 view is being referenced directly via the URL, the browser may show
-nothing.
+nothing::
 
   >>> print http("""
   ... GET /abcdefg/@@inline HTTP/1.1
@@ -208,7 +214,7 @@ The Default Display View
 
 This view is similar to the download and inline views, but no content
 disposition is specified at all.  This lets the browser's default
-handling of the data in the current context to be applied.
+handling of the data in the current context to be applied::
 
   >>> print http("""
   ... GET /abcdefg/@@display HTTP/1.1
