@@ -17,7 +17,7 @@ Note that result objects are intended to be used once and then
 discarded.
 
 Let's start by creating a file object we can use to demonstrate the
-download support::
+download support:
 
   >>> import transaction
   >>> from zope.file.file import File
@@ -29,7 +29,7 @@ Headers
 -------
 
 Now, let's get the headers for this file.  We use a utility function called
-``getHeaders``::
+``getHeaders``:
 
   >>> from zope.file.download import getHeaders
   >>> headers = getHeaders(f, contentDisposition='attachment')
@@ -37,7 +37,7 @@ Now, let's get the headers for this file.  We use a utility function called
 Since there's no suggested download filename on the file, the
 Content-Disposition header doesn't specify one, but does indicate that
 the response body be treated as a file to save rather than to apply
-the default handler for the content type::
+the default handler for the content type:
 
   >>> sorted(headers)
   [('Content-Disposition', 'attachment; filename="file"'),
@@ -49,7 +49,7 @@ Note that a default content type of 'application/octet-stream' is
 used.
 
 If the file object specifies a content type, that's used in the headers
-by default::
+by default:
 
   >>> f.mimeType = "text/plain"
   >>> headers = getHeaders(f, contentDisposition='attachment')
@@ -58,7 +58,7 @@ by default::
    ('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
-Alternatively, a content type can be specified to ``getHeaders``::
+Alternatively, a content type can be specified to ``getHeaders``:
 
   >>> headers = getHeaders(f, contentType="text/xml",
   ...                      contentDisposition='attachment')
@@ -68,7 +68,7 @@ Alternatively, a content type can be specified to ``getHeaders``::
    ('Content-Type', 'text/xml')]
 
 The filename provided to the browser can be controlled similarly.  If
-the content object provides one, it will be used by default::
+the content object provides one, it will be used by default:
 
   >>> headers = getHeaders(f, contentDisposition='attachment')
   >>> sorted(headers)
@@ -77,7 +77,7 @@ the content object provides one, it will be used by default::
    ('Content-Type', 'text/plain')]
 
 Providing an alternate name to ``getHeaders`` overrides the download
-name from the file::
+name from the file:
 
   >>> headers = getHeaders(f, downloadName="foo.txt",
   ...                      contentDisposition='attachment')
@@ -87,7 +87,7 @@ name from the file::
    ('Content-Type', 'text/plain')]
 
 The default Content-Disposition header can be overridden by providing
-an argument to ``getHeaders``::
+an argument to ``getHeaders``:
 
   >>> headers = getHeaders(f, contentDisposition="inline")
   >>> sorted(headers)
@@ -96,7 +96,7 @@ an argument to ``getHeaders``::
    ('Content-Type', 'text/plain')]
 
 If the `contentDisposition` argument is not provided, none will be
-included in the headers::
+included in the headers:
 
   >>> headers = getHeaders(f)
   >>> sorted(headers)
@@ -108,7 +108,7 @@ Body
 ----
 
 We use DownloadResult to deliver the content to the browser.  Since
-there's no data in this file, there are no body chunks::
+there's no data in this file, there are no body chunks:
     
   >>> transaction.commit()
   >>> from zope.file.download import DownloadResult
@@ -117,7 +117,7 @@ there's no data in this file, there are no body chunks::
   []
 
 We still need to see how non-empty files are handled.  Let's write
-some data to our file object::
+some data to our file object:
 
   >>> w = f.open("w")
   >>> w.write("some text")
@@ -126,7 +126,7 @@ some data to our file object::
   >>> transaction.commit()
 
 Now we can create a result object and see if we get the data we
-expect::
+expect:
 
   >>> result = DownloadResult(f)
   >>> L = list(result)
@@ -134,7 +134,7 @@ expect::
   'some text'
 
 If the body content is really large, the iterator may provide more
-than one chunk of data::
+than one chunk of data:
 
   >>> w = f.open("w")
   >>> w.write("*" * 1024 * 1024)
@@ -148,7 +148,7 @@ than one chunk of data::
   True
 
 Once iteration over the body has completed, further iteration will not
-yield additional data::
+yield additional data:
 
   >>> list(result)
   []
@@ -159,7 +159,7 @@ The Download View
 
 Now that we've seen the ``getHeaders`` function and the result object,
 let's take a look at the basic download view that uses them.  We'll need
-to add a file object where we can get to it using a browser::
+to add a file object where we can get to it using a browser:
 
   >>> f = File()
   >>> f.mimeType = "text/plain"
@@ -173,7 +173,7 @@ to add a file object where we can get to it using a browser::
   >>> transaction.commit()
 
 Now, let's request the download view of the file object and check the
-result::
+result:
 
   >>> print http("""
   ... GET /abcdefg/@@download HTTP/1.1
@@ -195,7 +195,7 @@ downloading it.  A basic inline view is provided for this use case.
 Note that browsers may decide not to display the image when this view
 is used and there is not page that it's being loaded into: if this
 view is being referenced directly via the URL, the browser may show
-nothing::
+nothing:
 
   >>> print http("""
   ... GET /abcdefg/@@inline HTTP/1.1
@@ -214,7 +214,7 @@ The Default Display View
 
 This view is similar to the download and inline views, but no content
 disposition is specified at all.  This lets the browser's default
-handling of the data in the current context to be applied::
+handling of the data in the current context to be applied:
 
   >>> print http("""
   ... GET /abcdefg/@@display HTTP/1.1

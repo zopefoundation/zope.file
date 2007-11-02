@@ -16,8 +16,6 @@
 __docformat__ = "reStructuredText"
 
 import os.path
-import unittest
-
 import shutil
 import tempfile
 
@@ -103,15 +101,3 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
 
 ZopeFileLayer = ZCMLLayer(
     os.path.join(here, "ftesting.zcml"), __name__, "ZopeFileLayer")
-
-def fromDocFile(path):
-    suite = FunctionalBlobDocFileSuite(path)
-    suite.layer = ZopeFileLayer
-    return suite
-
-def test_suite():
-    return unittest.TestSuite([
-        fromDocFile("contenttype.txt"),
-        fromDocFile("download.txt"),
-        fromDocFile("upload.txt"),
-        ])

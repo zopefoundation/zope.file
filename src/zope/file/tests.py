@@ -14,14 +14,21 @@
 
 """
 __docformat__ = "reStructuredText"
-
 import unittest
-
 from zope.testing import doctest
 
+from zope.file import testing
+
+def fromDocFile(path):
+    suite = testing.FunctionalBlobDocFileSuite(path)
+    suite.layer = testing.ZopeFileLayer
+    return suite
 
 def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(doctest.DocFileSuite("README.txt"))
-    suite.addTest(doctest.DocFileSuite("browser.txt"))
-    return suite
+    return unittest.TestSuite((
+        doctest.DocFileSuite("README.txt"),
+        doctest.DocFileSuite("browser.txt"),
+        fromDocFile("contenttype.txt"),
+        fromDocFile("download.txt"),
+        fromDocFile("upload.txt"),
+        ))

@@ -2,7 +2,7 @@
 Uploading a new file
 ====================
 
-There's a simple view for uploading a new file.  Let's try it::
+There's a simple view for uploading a new file.  Let's try it:
 
   >>> from StringIO import StringIO
 
@@ -19,7 +19,7 @@ There's a simple view for uploading a new file.  Let's try it::
   HTTP/1.1 303 ...
 
 Now, let's request the download view of the file object and check the
-result::
+result:
 
   >>> print http("""
   ... GET /plain.txt/@@download HTTP/1.1
@@ -33,14 +33,14 @@ result::
   some text
 
 We'll peek into the database to make sure the object implements the
-expected MIME type interface::
+expected MIME type interface:
 
   >>> from zope.mimetype import types
   >>> ob = getRootFolder()["plain.txt"]
   >>> types.IContentTypeTextPlain.providedBy(ob)
   True
 
-We can upload new data into our file object as well::
+We can upload new data into our file object as well:
 
   >>> sio = StringIO("new text")
   >>> sio.filename = "stuff.txt"
@@ -55,7 +55,7 @@ We can upload new data into our file object as well::
   HTTP/1.1 200 ...
 
 Now, let's request the download view of the file object and check the
-result::
+result:
 
   >>> print http("""
   ... GET /plain.txt/@@download HTTP/1.1
@@ -71,7 +71,7 @@ result::
 If we upload a file that has imprecise content type information (as we
 expect from browsers generally, and MSIE most significantly), we can
 see that the MIME type machinery will improve the information where
-possible::
+possible:
 
   >>> sio = StringIO("<?xml version='1.0' encoding='utf-8'?>\n"
   ...                "<html>...</html>\n")
@@ -89,7 +89,7 @@ possible::
   HTTP/1.1 303 ...
 
 Again, we'll request the download view of the file object and check
-the result::
+the result:
 
   >>> print http("""
   ... GET /simple.html/@@download HTTP/1.1
@@ -121,10 +121,10 @@ truncated and changed.
   ... Authorization: Basic mgr:mgrpw
   ... """, form={"form.data": sio,
   ...            "form.actions.add": "Add"}, handle_errors=False)
-  HTTP/1.1 303 ... 
+  HTTP/1.1 303 ...
 
 Again, we'll request the download view of the file object and check
-the result::
+the result:
 
   >>> print http("""
   ... GET /naughty%20name.html/@@download HTTP/1.1
@@ -137,5 +137,5 @@ the result::
   <BLANKLINE>
   <?xml version='1.0' encoding='utf-8'?>
   <html>...</html>
-  <BLANKLINE> 
+  <BLANKLINE>
 

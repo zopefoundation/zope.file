@@ -7,7 +7,7 @@ and, where applicable, the content encoding.  Content encoding is
 applicable based on the specific content type of the file.
 
 Let's demonstrate the behavior of the form with a simple bit of
-content.  We'll upload a bit of HTML as a sample document::
+content.  We'll upload a bit of HTML as a sample document:
 
   >>> import StringIO
   >>> sio = StringIO.StringIO("A <sub>little</sub> HTML."
@@ -24,7 +24,7 @@ content.  We'll upload a bit of HTML as a sample document::
   ...     sio, "text/html", "sample.html")
   >>> browser.getControl("Add").click()
 
-We can see that the MIME handlers have marked this as HTML content::
+We can see that the MIME handlers have marked this as HTML content:
 
   >>> import zope.mimetype.interfaces
   >>> import zope.mimetype.types
@@ -34,13 +34,13 @@ We can see that the MIME handlers have marked this as HTML content::
   True
 
 It's important to note that this also means the content is encoded
-text::
+text:
 
   >>> zope.mimetype.interfaces.IContentTypeEncoded.providedBy(file)
   True
 
 The "Content Type" page will show us the MIME type and encoding that
-have been selected::
+have been selected:
 
   >>> browser.getLink("sample.html").click()
   >>> browser.getLink("Content Type").click()
@@ -49,20 +49,20 @@ have been selected::
   ['zope.mimetype.types.IContentTypeTextHtml']
 
 The empty string value indicates that we have no encoding
-information::
+information:
 
   >>> ctrl = browser.getControl(name="form.encoding")
   >>> print ctrl.value
   ['']
 
-Let's now set the encoding value to an old favorite, Latin-1::
+Let's now set the encoding value to an old favorite, Latin-1:
 
   >>> ctrl.value = ["iso-8859-1"]
   >>> browser.handleErrors = False
   >>> browser.getControl("Save").click()
 
 We now see the updated value in the form, and can check the value in
-the MIME content-type parameters on the object::
+the MIME content-type parameters on the object:
 
   >>> ctrl = browser.getControl(name="form.encoding")
   >>> print ctrl.value
@@ -73,7 +73,7 @@ the MIME content-type parameters on the object::
   {'charset': 'iso-8859-1'}
 
 Something more interesting is that we can now use a non-encoded
-content type, and the encoding field will be removed from the form::
+content type, and the encoding field will be removed from the form:
 
   >>> ctrl = browser.getControl(name="form.mimeType")
   >>> ctrl.value = ["zope.mimetype.types.IContentTypeImageTiff"]
@@ -85,7 +85,7 @@ content type, and the encoding field will be removed from the form::
   LookupError: name 'form.encoding'
 
 If we switch back to an encoded type, we see that our encoding wasn't
-lost::
+lost:
 
   >>> ctrl = browser.getControl(name="form.mimeType")
   >>> ctrl.value = ["zope.mimetype.types.IContentTypeTextHtml"]
@@ -96,7 +96,7 @@ lost::
 
 On the other hand, if we try setting the encoding to something which
 simply cannot decode the input data, we get an error message saying
-that's not going to work, and no changes are saved::
+that's not going to work, and no changes are saved:
 
   >>> ctrl = browser.getControl(name="form.encoding")
   >>> ctrl.value = ["utf-8"]

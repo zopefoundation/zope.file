@@ -10,7 +10,7 @@ is provided using an adapter implementing the
 `zope.app.size.interfaces.ISized` interface.  Such an adapter is
 available for the file object.
 
-Let's do some imports and create a new file object::
+Let's do some imports and create a new file object:
 
   >>> from zope.file.file import File
   >>> from zope.file.browser import Sized
@@ -25,20 +25,20 @@ Let's do some imports and create a new file object::
   >>> s.sizeForDisplay()
   u'0 KB'
 
-Let's add some content to the file::
+Let's add some content to the file:
 
   >>> w = f.open('w')
   >>> w.write("some text")
   >>> w.close()
 
-The sized adapter now reflects the updated size::
+The sized adapter now reflects the updated size:
 
   >>> s.sizeForSorting()
   ('byte', 9)
   >>> s.sizeForDisplay()
   u'1 KB'
 
-Let's try again with a larger file size::
+Let's try again with a larger file size:
 
   >>> w = f.open('w')
   >>> w.write("x" * (1024*1024+10))
@@ -52,7 +52,7 @@ Let's try again with a larger file size::
   >>> m.mapping
   {'size': '1.00'}
 
-And still a bigger size::
+And still a bigger size:
 
   >>> w = f.open('w')
   >>> w.write("x" * 3*512*1024)
