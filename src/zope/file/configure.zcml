@@ -9,7 +9,7 @@
     <require
         permission="zope.View"
         interface="zope.mimetype.interfaces.IContentTypeAware"
-        attributes="size"
+        attributes="size openDetached"
         />
     <require
         permission="zope.ManageContent"
@@ -17,7 +17,7 @@
         />
     <require
         permission="zope.ManageContent"
-        attributes="open openDetached"
+        attributes="open"
         />
     <implements
         interface="
