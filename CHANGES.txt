@@ -5,6 +5,9 @@ CHANGES
 0.4.0 (unreleased)
 ------------------
 
+- `openDetached` is now protected by zope.View instead of zope.ManageContent.
+        
+
 0.3.0 (2007-11-01)
 ------------------
 
