@@ -16,7 +16,7 @@
 __docformat__ = "reStructuredText"
 
 import re
-import zope.app.container.interfaces
+import zope.container.interfaces
 import zope.lifecycleevent
 import zope.component
 import zope.event
@@ -65,7 +65,7 @@ class Upload(zope.formlib.form.AddForm):
 
     def add(self, ob):
         if self._name and self.context.nameAllowed():
-            nc = zope.app.container.interfaces.INameChooser(
+            nc = zope.container.interfaces.INameChooser(
                 self.context.context)
             name = nc.chooseName(self._name, ob)
             self.context.contentName = name

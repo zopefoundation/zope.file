@@ -6,7 +6,7 @@ CHANGES
 ------------------
 
 - `openDetached` is now protected by zope.View instead of zope.ManageContent.
-        
+- Use zope.container instead of zope.app.container.        
 
 0.3.0 (2007-11-01)
 ------------------
