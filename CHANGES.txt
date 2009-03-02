@@ -5,7 +5,8 @@ CHANGES
 0.5.0 (unreleased)
 ------------------
 
-- ...
+- Change package's mailing list address to zope-dev at zope.org instead
+  of the retired one.
 
 0.4.0 (2009-01-31)
 ------------------

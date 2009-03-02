@@ -24,7 +24,7 @@ def read(*rnames):
 setup(name='zope.file',
       version = '0.5.0dev',
       author='Zope Corporation and Contributors',
-      author_email='zope3-dev@zope.org',
+      author_email='zope-dev@zope.org',
       description='Efficient File Implementation for Zope Applications',
       long_description=(
           read('README.txt')
