@@ -8,12 +8,15 @@ CHANGES
 - Change package's mailing list address to zope-dev at zope.org instead
   of the retired one.
 
+- Made tests compatible with ZODB 3.9.
+
+
 0.4.0 (2009-01-31)
 ------------------
 
 - `openDetached` is now protected by zope.View instead of zope.ManageContent.
 
-- Use zope.container instead of zope.app.container.        
+- Use zope.container instead of zope.app.container.
 
 0.3.0 (2007-11-01)
 ------------------
