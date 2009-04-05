@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2006 Zope Corporation and Contributors.
+# Copyright (c) 2006-2009 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -29,8 +29,7 @@ setup(name='zope.file',
       long_description=(
           read('README.txt')
           + '\n\n' +
-          'Detailed Documentation\n' +
-          '======================\n\n'
+          '.. contents::'
           + '\n\n' +
           read('src', 'zope', 'file', 'README.txt')
           + '\n\n' +
@@ -65,14 +64,9 @@ setup(name='zope.file',
                 'zope.app.securitypolicy',
                 'zope.app.zcmlfiles',
                 'zope.testbrowser',
-                'zope.formlib',
                 'zope.app.server']),
      install_requires=['setuptools',
                        'ZODB3',
-                       'zope.app.appsetup',
-                       'zope.app.container',
-                       'zope.app.publication',
-                       'zope.app.wsgi',
                        'zope.container',
                        'zope.event',
                        'zope.interface',

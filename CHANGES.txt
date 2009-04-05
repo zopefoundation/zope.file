@@ -10,6 +10,8 @@ CHANGES
 
 - Made tests compatible with ZODB 3.9.
 
+- Removed not needed install requirement declarations.
+
 
 0.4.0 (2009-01-31)
 ------------------
