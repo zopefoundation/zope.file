@@ -5,7 +5,8 @@ CHANGES
 0.6.0 (unreleased)
 ------------------
 
-- ...
+- Import content-type parser from zope.contenttype, adding a dependency on
+  that package.
 
 0.5.0 (2009-07-23)
 ------------------

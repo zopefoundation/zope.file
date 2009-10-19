@@ -17,6 +17,7 @@ __docformat__ = "reStructuredText"
 
 import re
 import zope.container.interfaces
+import zope.contenttype.parse
 import zope.lifecycleevent
 import zope.component
 import zope.event
@@ -24,7 +25,6 @@ import zope.file.file
 import zope.formlib.form
 import zope.mimetype.event
 import zope.mimetype.interfaces
-import zope.publisher.contenttype
 import zope.schema
 import zope.security.proxy
 
@@ -148,7 +148,7 @@ def updateBlob(ob, input):
     if not mimeType:
         mimeType = "application/octet-stream"
     if contentType:
-        major, minor, parameters = zope.publisher.contenttype.parse(
+        major, minor, parameters = zope.contenttype.parse.parse(
             contentType)
         if "charset" in parameters:
             parameters["charset"] = parameters["charset"].lower()
