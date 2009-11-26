@@ -88,14 +88,14 @@
       />
 
   <browser:view
-      for="zope.app.container.interfaces.IAdding"
+      for="zope.browser.interfaces.IAdding"
       name="zope.file.File"
       class=".upload.Upload"
       permission="zope.ManageContent"
       />
 
   <browser:addMenuItem
-      for="zope.app.container.interfaces.IAdding"
+      for="zope.browser.interfaces.IAdding"
       view="zope.file.File"
       title="Zope File"
       class="zope.file.file.File"
