@@ -5,21 +5,23 @@ Presentation Adapters
 Object size
 -----------
 
-The size of the file as presented in the contents view of a container
-is provided using an adapter implementing the
-`zope.app.size.interfaces.ISized` interface.  Such an adapter is
-available for the file object.
+The size of the file as presented in the contents view of a container is
+provided using an adapter implementing the `zope.size.interfaces.ISized`
+interface. Such an adapter is available for the file object.
 
 Let's do some imports and create a new file object:
 
   >>> from zope.file.file import File
   >>> from zope.file.browser import Sized
+  >>> from zope.size.interfaces import ISized
 
   >>> f = File()
   >>> f.size
   0
 
   >>> s = Sized(f)
+  >>> ISized.providedBy(s)
+  True
   >>> s.sizeForSorting()
   ('byte', 0)
   >>> s.sizeForDisplay()
