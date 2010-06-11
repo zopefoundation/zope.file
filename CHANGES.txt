@@ -5,6 +5,9 @@ CHANGES
 0.6.0 (unreleased)
 ------------------
 
+- Move browser-related zcml to `browser.zcml` so that it easier for
+  applications to exclude it.
+
 - Import content-type parser from zope.contenttype, adding a dependency on
   that package.
 

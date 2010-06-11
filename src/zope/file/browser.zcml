@@ -1,0 +1,58 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="zope.file"
+    >
+
+  <browser:view
+      for=".interfaces.IFile"
+      name="download"
+      class=".download.Download"
+      permission="zope.View"
+      />
+
+  <browser:view
+      for=".interfaces.IFile"
+      name="inline"
+      class=".download.Inline"
+      permission="zope.View"
+      />
+
+  <browser:view
+      for=".interfaces.IFile"
+      name="display"
+      class=".download.Display"
+      permission="zope.View"
+      />
+
+  <browser:view
+      for=".interfaces.IFile"
+      menu="zmi_views" title="Upload"
+      name="edit.html"
+      class=".upload.Reupload"
+      permission="zope.ManageContent"
+      />
+
+  <browser:view
+      for=".interfaces.IFile"
+      menu="zmi_views" title="Content Type"
+      name="contenttype.html"
+      class=".contenttype.ContentTypeForm"
+      permission="zope.ManageContent"
+      />
+
+  <browser:view
+      for="zope.browser.interfaces.IAdding"
+      name="zope.file.File"
+      class=".upload.Upload"
+      permission="zope.ManageContent"
+      />
+
+  <browser:addMenuItem
+      for="zope.browser.interfaces.IAdding"
+      view="zope.file.File"
+      title="Zope File"
+      class="zope.file.file.File"
+      permission="zope.ManageContent"
+      />
+</configure>
