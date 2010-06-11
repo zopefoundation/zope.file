@@ -15,9 +15,6 @@
 """
 __docformat__ = "reStructuredText"
 
-import sys
-import cStringIO
-
 import persistent
 
 import zope.location.interfaces
@@ -66,4 +63,3 @@ class File(persistent.Persistent):
         size = int(reader.tell())
         reader.close()
         return size
-

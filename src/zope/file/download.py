@@ -15,8 +15,6 @@
 """
 __docformat__ = "reStructuredText"
 
-import cStringIO
-
 import zope.interface
 import zope.mimetype.interfaces
 import zope.publisher.browser

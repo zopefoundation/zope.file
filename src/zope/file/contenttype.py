@@ -58,7 +58,7 @@ def validateCodecUse(file, iface, codec, codec_field):
                 text, consumed = codec.decode(content_data)
                 if consumed != len(content_data):
                     raise UnicodeError("not all data decoded")
-            except UnicodeError, e:
+            except UnicodeError:
                 err = zope.app.form.interfaces.WidgetInputError(
                     codec_field.__name__,
                     codec_field.field.title,
