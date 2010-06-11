@@ -58,8 +58,6 @@ class Upload(zope.formlib.form.AddForm):
         ob = self._create_instance(data)
         f = self.request.form["form.data"]
         updateBlob(ob, f)
-        zope.event.notify(
-            zope.lifecycleevent.ObjectCreatedEvent(ob))
         self._name = nameFinder(f)
         return ob
 

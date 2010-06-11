@@ -139,3 +139,29 @@ the result:
   <html>...</html>
   <BLANKLINE>
 
+In zope.file <= 0.5.0, a redundant ObjectCreatedEvent was fired in the
+Upload view.  We'll demonstrate that this is no longer the case.
+
+  >>> import zope.component
+  >>> from zope.file.interfaces import IFile
+  >>> from zope.lifecycleevent import IObjectCreatedEvent
+
+We'll register a subscriber for IObjectCreatedEvent that simply increments
+a counter.
+
+  >>> count = 0
+  >>> def inc(*args):
+  ...   global count; count += 1
+  >>> zope.component.provideHandler(inc, (IFile, IObjectCreatedEvent))
+
+  >>> print http("""
+  ... POST /@@+/zope.file.File HTTP/1.1
+  ... Authorization: Basic mgr:mgrpw
+  ... """, form={"form.data": sio,
+  ...            "form.actions.add": "Add"}, handle_errors=False)
+  HTTP/1.1 303 ...
+
+The subscriber was called only once.
+
+  >>> print count
+  1

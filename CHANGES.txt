@@ -5,6 +5,10 @@ CHANGES
 0.6.0 (unreleased)
 ------------------
 
+- Bug fix: remove duplicate firing of ObjectCreatedEvent in
+  zope.file.upload.Upload (the event is already fired in its base class,
+  zope.formlib.form.AddForm).
+
 - Move browser-related zcml to `browser.zcml` so that it easier for
   applications to exclude it.
 
