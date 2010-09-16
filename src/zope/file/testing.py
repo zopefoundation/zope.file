@@ -15,6 +15,7 @@
 """
 __docformat__ = "reStructuredText"
 
+import doctest
 import os.path
 import shutil
 import tempfile
@@ -23,7 +24,6 @@ import transaction
 from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
 from ZODB.blob import BlobStorage
-from zope.testing import doctest
 import zope.app.testing.functional
 from zope.app.component.hooks import setSite
 import ZODB.interfaces
