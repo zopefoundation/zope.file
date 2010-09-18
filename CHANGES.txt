@@ -5,7 +5,7 @@ CHANGES
 0.6.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Declared more dependencies.
 
 
 0.6.0 (2010-09-16)

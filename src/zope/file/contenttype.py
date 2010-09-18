@@ -15,6 +15,7 @@
 """
 __docformat__ = "reStructuredText"
 
+import zope.app.form.interfaces
 import zope.component
 import zope.formlib.form
 import zope.interface
