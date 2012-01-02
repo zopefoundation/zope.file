@@ -15,9 +15,9 @@
 """
 __docformat__ = "reStructuredText"
 
-import zope.app.form.interfaces
 import zope.component
 import zope.formlib.form
+import zope.formlib.interfaces
 import zope.interface
 import zope.lifecycleevent
 import zope.mimetype.event
@@ -60,7 +60,7 @@ def validateCodecUse(file, iface, codec, codec_field):
                 if consumed != len(content_data):
                     raise UnicodeError("not all data decoded")
             except UnicodeError:
-                err = zope.app.form.interfaces.WidgetInputError(
+                err = zope.formlib.interfaces.WidgetInputError(
                     codec_field.__name__,
                     codec_field.field.title,
                     "Selected encoding cannot decode document.")
