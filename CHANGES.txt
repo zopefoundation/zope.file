@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-0.6.1 (unreleased)
+0.6.1 (2012-01-26)
 ------------------
 
 - Declared more dependencies.
