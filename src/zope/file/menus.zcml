@@ -1,0 +1,35 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="zope.file"
+    >
+
+  <!--
+      Menu related configuration.
+      Loaded from configure.zcml only if zope.app.zcmlfiles is available.
+  -->
+  <browser:view
+      for=".interfaces.IFile"
+      menu="zmi_views" title="Upload"
+      name="edit.html"
+      class=".upload.Reupload"
+      permission="zope.ManageContent"
+      />
+
+  <browser:view
+      for=".interfaces.IFile"
+      menu="zmi_views" title="Content Type"
+      name="contenttype.html"
+      class=".contenttype.ContentTypeForm"
+      permission="zope.ManageContent"
+      />
+
+  <browser:addMenuItem
+      for="zope.browser.interfaces.IAdding"
+      view="zope.file.File"
+      title="Zope File"
+      class="zope.file.file.File"
+      permission="zope.ManageContent"
+      />
+
+</configure>

@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+0.6.2 (unreleased)
+------------------
+
+- Moved menu-oriented registrations into new menus.zcml. This is now
+  loaded if zope.app.zcmlfiles is available only.
+
 0.6.1 (2012-01-26)
 ------------------
 
