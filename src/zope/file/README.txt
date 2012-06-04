@@ -33,6 +33,17 @@ applicable (and available):
   >>> f.parameters["charset"]
   'us-ascii'
 
+Both, `parameters` and `mimeType` can optionally also be set when
+creating a `File` object:
+
+  >>> f2 = File(mimeType = "application/octet-stream",
+  ...           parameters = dict(charset = "utf-8"))
+  >>> f2.mimeType
+  'application/octet-stream'
+
+  >>> f2.parameters["charset"]
+  'utf-8'
+
 File objects also sport a `size` attribute that provides the number of
 bytes in the file:
 

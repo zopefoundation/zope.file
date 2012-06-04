@@ -28,6 +28,7 @@ def test_suite():
     return unittest.TestSuite((
         doctest.DocFileSuite("README.txt"),
         doctest.DocFileSuite("browser.txt"),
+        fromDocFile("adapters.txt"),
         fromDocFile("contenttype.txt"),
         fromDocFile("download.txt"),
         fromDocFile("upload.txt"),
