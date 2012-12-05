@@ -25,7 +25,7 @@ from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
 from ZODB.blob import BlobStorage
 import zope.app.testing.functional
-from zope.app.component.hooks import setSite
+from zope.component.hooks import setSite
 import ZODB.interfaces
 
 here = os.path.dirname(os.path.realpath(__file__))

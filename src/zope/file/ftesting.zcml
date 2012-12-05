@@ -14,8 +14,6 @@
       package="zope.app"
       />
 
-  <include package="zope.app.server" />
-
   <include package="zope.login"/>
   <include package="zope.password"/>
   

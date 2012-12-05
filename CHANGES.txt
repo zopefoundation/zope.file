@@ -5,7 +5,8 @@ CHANGES
 0.6.3 (unreleased)
 ------------------
 
-- No changes yet.
+- Remove unneeded test dependencies zope.app.server and zope.app.component
+
 
 0.6.2 (2012-06-04)
 ------------------
