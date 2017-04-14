@@ -28,6 +28,8 @@ import zope.app.testing.functional
 from zope.component.hooks import setSite
 import ZODB.interfaces
 
+import zope.file
+
 here = os.path.dirname(os.path.realpath(__file__))
 
 class FunctionalBlobTestSetup(zope.app.testing.functional.FunctionalTestSetup):
@@ -65,6 +67,8 @@ class FunctionalBlobTestSetup(zope.app.testing.functional.FunctionalTestSetup):
             self.temp_dir_name = None
         setSite(None)
 
+config_file = os.path.join(here, "ftesting.zcml")
+
 class ZCMLLayer(zope.app.testing.functional.ZCMLLayer):
 
     def setUp(self):
@@ -73,14 +77,15 @@ class ZCMLLayer(zope.app.testing.functional.ZCMLLayer):
 def FunctionalBlobDocFileSuite(*paths, **kw):
     globs = kw.setdefault('globs', {})
     globs['http'] = zope.app.testing.functional.HTTPCaller()
-    globs['getRootFolder'] = zope.app.testing.functional.getRootFolder
+    if 'getRootFolder' not in globs:
+        globs['getRootFolder'] = zope.app.testing.functional.getRootFolder
     globs['sync'] = zope.app.testing.functional.sync
 
     kw['package'] = doctest._normalize_module(kw.get('package'))
 
     kwsetUp = kw.get('setUp')
     def setUp(test):
-        FunctionalBlobTestSetup().setUp()
+        FunctionalBlobTestSetup(config_file).setUp()
 
         if kwsetUp is not None:
             kwsetUp(test)
@@ -106,4 +111,15 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
     return suite
 
 ZopeFileLayer = ZCMLLayer(
-    os.path.join(here, "ftesting.zcml"), __name__, "ZopeFileLayer")
+    config_file, __name__, "ZopeFileLayer")
+
+import zope.app.wsgi.testlayer
+import zope.testbrowser.wsgi
+
+
+class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
+                   zope.app.wsgi.testlayer.BrowserLayer):
+    pass
+
+
+BrowserLayer = BrowserLayer(zope.file)
