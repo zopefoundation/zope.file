@@ -13,24 +13,24 @@ content.  We'll upload a bit of HTML as a sample document:
   >>> sio = StringIO.StringIO("A <sub>little</sub> HTML."
   ...                         "  There's one 8-bit Latin-1 character: \xd8.")
 
-  >>> from zope.testbrowser.testing import Browser
+  >>> from zope.testbrowser.wsgi import Browser
   >>> browser = Browser()
   >>> browser.addHeader("Authorization", "Basic mgr:mgrpw")
   >>> browser.addHeader("Accept-Language", "en-US")
   >>> browser.open("http://localhost/@@+/zope.file.File")
 
   >>> ctrl = browser.getControl(name="form.data")
-  >>> ctrl.mech_control.add_file(
+  >>> ctrl.add_file(
   ...     sio, "text/html", "sample.html")
   >>> browser.getControl("Add").click()
 
 We can see that the MIME handlers have marked this as HTML content:
 
   >>> import zope.mimetype.interfaces
-  >>> import zope.mimetype.types
+  >>> import zope.mimetype.mtypes
 
-  >>> file = getRootFolder()["sample.html"]
-  >>> zope.mimetype.types.IContentTypeTextHtml.providedBy(file)
+  >>> file = getRootFolder()[u"sample.html"]
+  >>> zope.mimetype.mtypes.IContentTypeTextHtml.providedBy(file)
   True
 
 It's important to note that this also means the content is encoded
@@ -46,7 +46,7 @@ have been selected:
   >>> browser.getLink("Content Type").click()
 
   >>> browser.getControl(name="form.mimeType").value
-  ['zope.mimetype.types.IContentTypeTextHtml']
+  ['zope.mimetype.mtypes.IContentTypeTextHtml']
 
 The empty string value indicates that we have no encoding
 information:
@@ -76,19 +76,20 @@ Something more interesting is that we can now use a non-encoded
 content type, and the encoding field will be removed from the form:
 
   >>> ctrl = browser.getControl(name="form.mimeType")
-  >>> ctrl.value = ["zope.mimetype.types.IContentTypeImageTiff"]
+  >>> ctrl.value = ["zope.mimetype.mtypes.IContentTypeImageTiff"]
   >>> browser.getControl("Save").click()
 
   >>> browser.getControl(name="form.encoding")
   Traceback (most recent call last):
     ...
   LookupError: name 'form.encoding'
+  ...
 
 If we switch back to an encoded type, we see that our encoding wasn't
 lost:
 
   >>> ctrl = browser.getControl(name="form.mimeType")
-  >>> ctrl.value = ["zope.mimetype.types.IContentTypeTextHtml"]
+  >>> ctrl.value = ["zope.mimetype.mtypes.IContentTypeTextHtml"]
   >>> browser.getControl("Save").click()
 
   >>> browser.getControl(name="form.encoding").value
