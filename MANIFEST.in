@@ -1,0 +1,8 @@
+include *.py
+include *.txt
+include buildout.cfg
+include setup.cfg
+include .coveragerc
+recursive-include src *.pt
+recursive-include src *.txt
+recursive-include src *.zcml
