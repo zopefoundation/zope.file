@@ -28,21 +28,21 @@ setup(
     author_email='zope-dev@zope.org',
     description='Efficient File Implementation for Zope Applications',
     long_description=(
-        read('README.txt')
+        read('README.rst')
         + '\n\n' +
         '.. contents::'
         + '\n\n' +
-        read('src', 'zope', 'file', 'README.txt')
+        read('src', 'zope', 'file', 'README.rst')
         + '\n\n' +
-        read('src', 'zope', 'file', 'download.txt')
+        read('src', 'zope', 'file', 'download.rst')
         + '\n\n' +
-        read('src', 'zope', 'file', 'upload.txt')
+        read('src', 'zope', 'file', 'upload.rst')
         + '\n\n' +
-        read('src', 'zope', 'file', 'contenttype.txt')
+        read('src', 'zope', 'file', 'contenttype.rst')
         + '\n\n' +
-        read('src', 'zope', 'file', 'browser.txt')
+        read('src', 'zope', 'file', 'browser.rst')
         + '\n\n' +
-        read('CHANGES.txt')
+        read('CHANGES.rst')
     ),
     keywords="zope3 web html ui file pattern",
     classifiers=[
