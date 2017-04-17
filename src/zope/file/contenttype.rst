@@ -105,5 +105,5 @@ that's not going to work, and no changes are saved:
 
   >>> browser.getControl("Save").click()
 
-  >>> print browser.contents
+  >>> print(browser.contents)
   <...Selected encoding cannot decode document...

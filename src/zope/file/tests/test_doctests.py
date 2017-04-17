@@ -26,10 +26,10 @@ def fromDocFile(path):
 
 def test_suite():
     return unittest.TestSuite((
-        doctest.DocFileSuite("README.rst"),
-        doctest.DocFileSuite("browser.rst"),
-        fromDocFile("adapters.rst"),
-        fromDocFile('contenttype.rst'),
-        fromDocFile("download.rst"),
-        fromDocFile("upload.rst"),
+        doctest.DocFileSuite("../README.rst"),
+        doctest.DocFileSuite("../browser.rst"),
+        fromDocFile("../adapters.rst"),
+        fromDocFile('../contenttype.rst'),
+        fromDocFile("../download.rst"),
+        fromDocFile("../upload.rst"),
         ))

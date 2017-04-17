@@ -1,0 +1,40 @@
+<html metal:use-macro="context/@@standard_macros/view"
+    i18n:domain="zope">
+<body>
+<div metal:fill-slot="body">
+  <div metal:define-macro="contents">
+
+    <form name="containerContentsForm" method="post" action="."
+          tal:attributes="action request/URL"
+          tal:define="container_contents view/listContentInfo">
+
+      <table id="sortable" class="listing" summary="Content listing"
+             i18n:attributes="summary">
+
+        <tbody>
+
+        <metal:block
+                     tal:repeat="item container_contents">
+          <tr tal:define="oddrow repeat/item/odd; url item/url;
+                          id_quoted item/id/url:quote">
+
+            <td>
+				<span>
+					<a href="#"
+                       tal:attributes="href
+									   string:${url}/@@SelectedManagementView.html"
+                       tal:content="item/id"
+                     >foo</a>
+				</span>
+			</td>
+          </tr>
+        </metal:block>
+
+        </tbody>
+      </table>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

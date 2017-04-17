@@ -67,9 +67,6 @@ setup(
     extras_require=dict(
         test=[
             'zope.app.basicskin',
-            'zope.app.component',
-            'zope.app.container',
-            'zope.app.folder',
             'zope.app.http',
             'zope.app.pagetemplate',
             'zope.app.principalannotation',

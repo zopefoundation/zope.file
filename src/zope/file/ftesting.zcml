@@ -5,7 +5,6 @@
     i18n_domain="zope.file"
     >
     <include package="zope.app.publisher" file="meta.zcml" />
-    <include package="zope.app.container.browser" file="meta.zcml" />
 
     <include package="zope.browsermenu" file="meta.zcml" />
 
@@ -33,10 +32,10 @@
 
 
     <include package="zope.app.basicskin" />
-    <include package="zope.app.component" />
-    <include package="zope.app.component.browser" />
-    <include package="zope.app.container" />
-    <include package="zope.app.folder" />
+
+    <include package="zope.site" />
+    <include package="zope.container" />
+
     <include package="zope.app.pagetemplate" />
     <include package="zope.app.principalannotation" />
     <include package="zope.app.publisher" />
@@ -53,5 +52,19 @@
     <include package="zope.traversing" />
     <include package="zope.traversing.browser" />
 
+    <browser:view
+        name="+"
+        menu="zmi_actions" title="Add"
+        for="zope.site.interfaces.IFolder"
+        permission="zope.ManageContent"
+        class=".testing.Adding"
+        />
+    <browser:page
+        for="zope.site.interfaces.IFolder"
+        name="contents.html"
+        class=".testing.Contents"
+        permission="zope.ManageContent"
+        attribute="contents"
+        />
 
 </configure>

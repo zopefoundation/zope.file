@@ -13,13 +13,25 @@
 """Functional tests for zope.file.
 
 """
+from __future__ import absolute_import, print_function, division
 __docformat__ = "reStructuredText"
 
 import doctest
-import os.path
+import urllib
 
 from zope.app.wsgi.testlayer import http
+from zope.browser.interfaces import IAdding
+from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.component import queryMultiAdapter
+from zope.container.interfaces import IContainerNamesContainer
+from zope.container.interfaces import INameChooser
+from zope.interface import implementer
+from zope.publisher.browser import BrowserView
+
+from zope.traversing.browser.absoluteurl import absoluteURL
+
 import zope.app.wsgi.testlayer
+import zope.security.checker
 import zope.testbrowser.wsgi
 
 import zope.file
@@ -62,3 +74,66 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
     suite = doctest.DocFileSuite(*paths, **kw)
     suite.layer = ZopeFileLayer
     return suite
+
+
+@implementer(IAdding)
+class Adding(BrowserView):
+    # set in BrowserView.__init__
+    request = None
+    context = None
+    contentName = None # usually set by Adding traverser
+
+    def add(self, content):
+        container = self.context
+        name = self.contentName
+        chooser = INameChooser(container)
+
+        request = self.request
+        name = request.get('add_input_name', name)
+        assert name
+
+        chooser.checkName(name, content)
+
+        container[name] = content
+        self.contentName = name # Set the added object Name
+        return container[name]
+
+
+
+    def nextURL(self):
+        return absoluteURL(self.context, self.request) + '/@@contents.html'
+
+
+    def nameAllowed(self):
+        """Return whether names can be input by the user."""
+        return not IContainerNamesContainer.providedBy(self.context)
+
+
+
+class Contents(BrowserView):
+
+    error = ''
+    message = ''
+    normalButtons = False
+    specialButtons = False
+    supportsRename = False
+    contents = ViewPageTemplateFile('tests/contents.pt')
+    contentsMacros = contents
+
+    def listContentInfo(self):
+        return self._normalListContentsInfo()
+
+    def normalListContentInfo(self):
+        return self._normalListContentsInfo()
+
+    def _normalListContentsInfo(self):
+        info = map(self._extractContentInfo, self.context.items())
+        return info
+
+    def _extractContentInfo(self, item):
+        info = {}
+        oid, obj = item
+        info['id'] = info['cb_id'] = oid
+        info['object'] = obj
+        info['url'] = urllib.quote(oid.encode('utf-8'))
+        return info
