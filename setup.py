@@ -67,23 +67,26 @@ setup(
     extras_require=dict(
         test=[
             'zope.app.zcmlfiles',
+            'zope.browser',
             'zope.login',
             'zope.password',
             'zope.securitypolicy',
             'zope.testbrowser>5',
             'zope.testrunner',
+        ],
+        browser=[
+            'zope.browser',
         ]
     ),
     install_requires=[
         'setuptools',
-        'ZODB3',
-        'zope.component>=3.8',
-        'zope.browser',
+        'ZODB',
+        'zope.component',
         'zope.container',
-        'zope.contenttype>=3.5',
+        'zope.contenttype',
         'zope.event',
         'zope.filerepresentation',
-        'zope.formlib>=4',
+        'zope.formlib',
         'zope.i18nmessageid',
         'zope.lifecycleevent',
         'zope.interface',
