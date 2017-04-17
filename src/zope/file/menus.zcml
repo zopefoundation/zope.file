@@ -8,7 +8,9 @@
   <!--
       Menu related configuration.
       Loaded from configure.zcml only if zope.app.zcmlfiles is available.
+	  That's the (old) default location that defines these menus.
   -->
+
   <browser:view
       for=".interfaces.IFile"
       menu="zmi_views" title="Upload"
