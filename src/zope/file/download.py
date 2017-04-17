@@ -66,10 +66,10 @@ def getHeaders(context, contentType=None, downloadName=None,
         headers += ("Content-Length", str(contentLength)),
         return headers
 
+@zope.interface.implementer(zope.publisher.interfaces.http.IResult)
 class DownloadResult(object):
     """Result object for a download request."""
 
-    zope.interface.implements(zope.publisher.interfaces.http.IResult)
 
     def __init__(self, context):
         self._iter = bodyIterator(

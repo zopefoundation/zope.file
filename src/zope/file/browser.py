@@ -15,20 +15,16 @@
 """
 __docformat__ = "reStructuredText"
 
+from zope import interface
+from zope import component
+
 import zope.size
 import zope.size.interfaces
-import zope.component
 import zope.file.interfaces
-import zope.interface
 
-
+@interface.implementer(zope.size.interfaces.ISized)
+@component.adapter(zope.file.interfaces.IFile)
 class Sized(object):
-
-    zope.interface.implements(
-        zope.size.interfaces.ISized)
-
-    zope.component.adapts(
-        zope.file.interfaces.IFile)
 
     def __init__(self, context):
         self.context = context

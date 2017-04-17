@@ -24,10 +24,10 @@ There's a simple view for uploading a new file.  Let's try it:
 Now, let's request the download view of the file object and check the
 result:
 
-  >>> print http("""
+  >>> print(http("""
   ... GET /plain.txt/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.0 200 Ok
   Content-Disposition: attachment; filename="plain.txt"
   Content-Length: 9
@@ -56,10 +56,10 @@ We can upload new data into our file object as well:
 Now, let's request the download view of the file object and check the
 result:
 
-  >>> print http("""
+  >>> print(http("""
   ... GET /plain.txt/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.0 200 Ok
   Content-Disposition: attachment; filename="plain.txt"
   Content-Length: 8
@@ -85,10 +85,10 @@ possible:
 Again, we'll request the download view of the file object and check
 the result:
 
-  >>> print http("""
+  >>> print(http("""
   ... GET /simple.html/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.0 200 Ok
   Content-Disposition: attachment; filename="simple.html"
   Content-Length: 56
@@ -116,10 +116,10 @@ truncated and changed.
 Again, we'll request the download view of the file object and check
 the result:
 
-  >>> print http("""
+  >>> print(http("""
   ... GET /naughty%20name.html/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.0 200 Ok
   Content-Disposition: attachment; filename="naughty name.html"
   Content-Length: 56
@@ -154,5 +154,5 @@ a counter.
 
 The subscriber was called only once.
 
-  >>> print count
+  >>> print(count)
   1

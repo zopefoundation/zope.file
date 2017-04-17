@@ -23,17 +23,16 @@ import zope.interface
 
 from ZODB.blob import Blob
 
+@zope.interface.implementer(
+    zope.file.interfaces.IFile,
+    zope.location.interfaces.ILocation)
 class File(persistent.Persistent):
-
-    zope.interface.implements(
-        zope.file.interfaces.IFile,
-        zope.location.interfaces.ILocation)
 
     __name__ = None
     __parent__ = None
     mimeType = None
 
-    _data = ""
+    _data = b""
     size = 0
 
     def __init__(self, mimeType=None, parameters=None):
@@ -45,7 +44,7 @@ class File(persistent.Persistent):
         self.parameters = parameters
         self._data = Blob()
         fp = self._data.open('w')
-        fp.write('')
+        fp.write(b'')
         fp.close()
 
     def open(self, mode="r"):
@@ -56,7 +55,7 @@ class File(persistent.Persistent):
 
     @property
     def size(self):
-        if self._data == "":
+        if self._data == b"":
             return 0
         reader = self.open()
         reader.seek(0,2)
