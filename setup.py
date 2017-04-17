@@ -54,6 +54,7 @@ setup(
         'Programming Language :: Python:: 2 :: Only',
         'Programming Language :: Python:: 2.7',
         'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Topic :: Internet :: WWW/HTTP',

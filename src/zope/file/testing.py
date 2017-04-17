@@ -27,6 +27,7 @@ from zope.container.interfaces import IContainerNamesContainer
 from zope.container.interfaces import INameChooser
 from zope.interface import implementer
 from zope.publisher.browser import BrowserView
+from zope.security.proxy import removeSecurityProxy
 
 from zope.traversing.browser.absoluteurl import absoluteURL
 
@@ -101,7 +102,11 @@ class Adding(BrowserView):
 
 
     def nextURL(self):
-        return absoluteURL(self.context, self.request) + '/@@contents.html'
+        # Remove the security proxy to work around an issue with
+        # the pure-python implementation of sameProxiedObjects
+        # See https://github.com/zopefoundation/zope.proxy/issues/15
+        context = removeSecurityProxy(self.context)
+        return absoluteURL(context, self.request) + '/@@contents.html'
 
 
     def nameAllowed(self):
@@ -127,7 +132,11 @@ class Contents(BrowserView):
         return self._normalListContentsInfo()
 
     def _normalListContentsInfo(self):
-        info = map(self._extractContentInfo, self.context.items())
+        # Remove the security proxy to work around an issue with
+        # iterating proxied BTree objects on PyPy (pure-python implementation
+        # of BTrees.) See https://github.com/zopefoundation/zope.security/issues/20
+        items = removeSecurityProxy(self.context.items())
+        info = map(self._extractContentInfo, items)
         return info
 
     def _extractContentInfo(self, item):
