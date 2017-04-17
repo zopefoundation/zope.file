@@ -17,86 +17,39 @@ __docformat__ = "reStructuredText"
 
 import doctest
 import os.path
-import shutil
-import tempfile
 
-import transaction
-from ZODB.DB import DB
-from ZODB.DemoStorage import DemoStorage
-from ZODB.blob import BlobStorage
-import zope.app.testing.functional
-from zope.component.hooks import setSite
-import ZODB.interfaces
+from zope.app.wsgi.testlayer import http
+import zope.app.wsgi.testlayer
+import zope.testbrowser.wsgi
 
 import zope.file
 
-here = os.path.dirname(os.path.realpath(__file__))
 
-class FunctionalBlobTestSetup(zope.app.testing.functional.FunctionalTestSetup):
+class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
+                   zope.app.wsgi.testlayer.BrowserLayer):
+    pass
 
-    temp_dir_name = None
-    direct_blob_support = False
 
-    def setUp(self):
-        """Prepares for a functional test case."""
-        # Tear down the old demo storage (if any) and create a fresh one
-        transaction.abort()
-        self.db.close()
-        storage = DemoStorage("Demo Storage", self.base_storage)
-        if ZODB.interfaces.IBlobStorage.providedBy(storage):
-            # at least ZODB 3.9
-            self.direct_blob_support = True
-        else:
-            # make a dir
-            temp_dir_name = self.temp_dir_name = tempfile.mkdtemp()
-            # wrap storage with BlobStorage
-            storage = BlobStorage(temp_dir_name, storage)
-        self.db = self.app.db = DB(storage)
-        self.connection = None
+ZopeFileLayer = BrowserLayer(zope.file)
 
-    def tearDown(self):
-        """Cleans up after a functional test case."""
-        transaction.abort()
-        if self.connection:
-            self.connection.close()
-            self.connection = None
-        self.db.close()
-        if not self.direct_blob_support and self.temp_dir_name is not None:
-            # del dir named '__blob_test__%s' % self.name
-            shutil.rmtree(self.temp_dir_name, True)
-            self.temp_dir_name = None
-        setSite(None)
-
-config_file = os.path.join(here, "ftesting.zcml")
-
-class ZCMLLayer(zope.app.testing.functional.ZCMLLayer):
-
-    def setUp(self):
-        self.setup = FunctionalBlobTestSetup(self.config_file)
 
 def FunctionalBlobDocFileSuite(*paths, **kw):
     globs = kw.setdefault('globs', {})
-    globs['http'] = zope.app.testing.functional.HTTPCaller()
-    if 'getRootFolder' not in globs:
-        globs['getRootFolder'] = zope.app.testing.functional.getRootFolder
-    globs['sync'] = zope.app.testing.functional.sync
-
+    globs['getRootFolder'] = ZopeFileLayer.getRootFolder
     kw['package'] = doctest._normalize_module(kw.get('package'))
 
     kwsetUp = kw.get('setUp')
     def setUp(test):
-        FunctionalBlobTestSetup(config_file).setUp()
+        wsgi_app = ZopeFileLayer.make_wsgi_app()
+        def _http(query_str, *args, **kwargs):
+            # Strip leading \n
+            query_str = query_str[1:]
+            return http(wsgi_app, query_str, *args, **kwargs)
 
+        test.globs['http'] = _http
         if kwsetUp is not None:
             kwsetUp(test)
     kw['setUp'] = setUp
-
-    kwtearDown = kw.get('tearDown')
-    def tearDown(test):
-        if kwtearDown is not None:
-            kwtearDown(test)
-        FunctionalBlobTestSetup().tearDown()
-    kw['tearDown'] = tearDown
 
     if 'optionflags' not in kw:
         old = doctest.set_unittest_reportflags(0)
@@ -107,19 +60,5 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
                              | doctest.NORMALIZE_WHITESPACE)
 
     suite = doctest.DocFileSuite(*paths, **kw)
-    suite.layer = zope.app.testing.functional.Functional
+    suite.layer = ZopeFileLayer
     return suite
-
-ZopeFileLayer = ZCMLLayer(
-    config_file, __name__, "ZopeFileLayer")
-
-import zope.app.wsgi.testlayer
-import zope.testbrowser.wsgi
-
-
-class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
-                   zope.app.wsgi.testlayer.BrowserLayer):
-    pass
-
-
-BrowserLayer = BrowserLayer(zope.file)

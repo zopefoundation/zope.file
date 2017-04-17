@@ -66,7 +66,6 @@ setup(
     namespace_packages=['zope'],
     extras_require=dict(
         test=[
-            'zope.app.testing',
             'zope.app.zcmlfiles',
             'zope.login',
             'zope.password',

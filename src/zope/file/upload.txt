@@ -7,16 +7,19 @@ There's a simple view for uploading a new file.  Let's try it:
   >>> from StringIO import StringIO
 
   >>> sio = StringIO("some text")
-  >>> sio.filename = "plain.txt"
-  >>> sio.headers = {"Content-Type": "text/plain; charset=utf-8",
-  ...                "Content-Disposition": 'attachment; filename="plain.txt"'}
 
-  >>> print http("""
-  ... POST /@@+/zope.file.File HTTP/1.1
-  ... Authorization: Basic mgr:mgrpw
-  ... """, form={"form.data": sio,
-  ...            "form.actions.add": "Add"}, handle_errors=False)
-  HTTP/1.1 303 ...
+  >>> from zope.testbrowser.wsgi import Browser
+  >>> browser = Browser()
+  >>> browser.handleErrors = False
+  >>> browser.addHeader("Authorization", "Basic mgr:mgrpw")
+  >>> browser.addHeader("Accept-Language", "en-US")
+
+  >>> browser.open("http://localhost/@@+/zope.file.File")
+
+  >>> ctrl = browser.getControl(name="form.data")
+  >>> ctrl.add_file(
+  ...     sio, "text/plain; charset=utf-8", "plain.txt")
+  >>> browser.getControl("Add").click()
 
 Now, let's request the download view of the file object and check the
 result:
@@ -25,7 +28,7 @@ result:
   ... GET /plain.txt/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False)
-  HTTP/1.1 200 Ok
+  HTTP/1.0 200 Ok
   Content-Disposition: attachment; filename="plain.txt"
   Content-Length: 9
   Content-Type: text/plain;charset=utf-8
@@ -43,16 +46,12 @@ expected MIME type interface:
 We can upload new data into our file object as well:
 
   >>> sio = StringIO("new text")
-  >>> sio.filename = "stuff.txt"
-  >>> sio.headers = {"Content-Type": "text/plain; charset=utf-8",
-  ...                "Content-Disposition": 'attachment; filename="stuff.txt"'}
+  >>> browser.open("http://localhost/plain.txt/@@edit.html")
 
-  >>> print http("""
-  ... POST /plain.txt/@@edit.html HTTP/1.1
-  ... Authorization: Basic mgr:mgrpw
-  ... """, form={"form.data": sio,
-  ...            "form.actions.edit": "Edit"}, handle_errors=False)
-  HTTP/1.1 200 ...
+  >>> ctrl = browser.getControl(name="form.data")
+  >>> ctrl.add_file(
+  ...     sio, "text/plain; charset=utf-8", "stuff.txt")
+  >>> browser.getControl("Edit").click()
 
 Now, let's request the download view of the file object and check the
 result:
@@ -61,7 +60,7 @@ result:
   ... GET /plain.txt/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False)
-  HTTP/1.1 200 Ok
+  HTTP/1.0 200 Ok
   Content-Disposition: attachment; filename="plain.txt"
   Content-Length: 8
   Content-Type: text/plain;charset=utf-8
@@ -75,18 +74,13 @@ possible:
 
   >>> sio = StringIO("<?xml version='1.0' encoding='utf-8'?>\n"
   ...                "<html>...</html>\n")
-  >>> sio.filename = "simple.html"
-  >>> sio.headers = {
-  ...     "Content-Type": "text/html; charset=utf-8",
-  ...     "Content-Disposition": 'attachment; filename="simple.html"',
-  ...     }
 
-  >>> print http("""
-  ... POST /@@+/zope.file.File HTTP/1.1
-  ... Authorization: Basic mgr:mgrpw
-  ... """, form={"form.data": sio,
-  ...            "form.actions.add": "Add"}, handle_errors=False)
-  HTTP/1.1 303 ...
+  >>> browser.open("http://localhost/@@+/zope.file.File")
+
+  >>> ctrl = browser.getControl(name="form.data")
+  >>> ctrl.add_file(
+  ...     sio, "text/html; charset=utf-8", "simple.html")
+  >>> browser.getControl("Add").click()
 
 Again, we'll request the download view of the file object and check
 the result:
@@ -95,7 +89,7 @@ the result:
   ... GET /simple.html/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False)
-  HTTP/1.1 200 Ok
+  HTTP/1.0 200 Ok
   Content-Disposition: attachment; filename="simple.html"
   Content-Length: 56
   Content-Type: application/xhtml+xml;charset=utf-8
@@ -110,18 +104,14 @@ truncated and changed.
 
   >>> sio = StringIO("<?xml version='1.0' encoding='utf-8'?>\n"
   ...                "<html>...</html>\n")
-  >>> sio.filename = r"C:\Documents and Settings\Joe\naughty name.html"
-  >>> sio.headers = {
-  ...     "Content-Type": "text/html; charset=utf-8",
-  ...     "Content-Disposition": 'attachment; filename=%s' % sio.filename,
-  ...     }
 
-  >>> print http("""
-  ... POST /@@+/zope.file.File HTTP/1.1
-  ... Authorization: Basic mgr:mgrpw
-  ... """, form={"form.data": sio,
-  ...            "form.actions.add": "Add"}, handle_errors=False)
-  HTTP/1.1 303 ...
+  >>> browser.open("http://localhost/@@+/zope.file.File")
+
+  >>> ctrl = browser.getControl(name="form.data")
+  >>> ctrl.add_file(
+  ...     sio, "text/html; charset=utf-8", r"C:\Documents and Settings\Joe\naughty name.html")
+  >>> browser.getControl("Add").click()
+
 
 Again, we'll request the download view of the file object and check
 the result:
@@ -130,7 +120,7 @@ the result:
   ... GET /naughty%20name.html/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False)
-  HTTP/1.1 200 Ok
+  HTTP/1.0 200 Ok
   Content-Disposition: attachment; filename="naughty name.html"
   Content-Length: 56
   Content-Type: application/xhtml+xml;charset=utf-8
@@ -154,12 +144,13 @@ a counter.
   ...   global count; count += 1
   >>> zope.component.provideHandler(inc, (IFile, IObjectCreatedEvent))
 
-  >>> print http("""
-  ... POST /@@+/zope.file.File HTTP/1.1
-  ... Authorization: Basic mgr:mgrpw
-  ... """, form={"form.data": sio,
-  ...            "form.actions.add": "Add"}, handle_errors=False)
-  HTTP/1.1 303 ...
+  >>> browser.open("http://localhost/@@+/zope.file.File")
+
+  >>> ctrl = browser.getControl(name="form.data")
+  >>> sio = StringIO("some data")
+  >>> ctrl.add_file(
+  ...     sio, "text/html; charset=utf-8", "name.html")
+  >>> browser.getControl("Add").click()
 
 The subscriber was called only once.
 

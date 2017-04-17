@@ -109,7 +109,7 @@ Body
 
 We use DownloadResult to deliver the content to the browser.  Since
 there's no data in this file, there are no body chunks:
-    
+
   >>> transaction.commit()
   >>> from zope.file.download import DownloadResult
   >>> result = DownloadResult(f)
@@ -179,7 +179,7 @@ result:
   ... GET /abcdefg/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False)
-  HTTP/1.1 200 Ok
+  HTTP/1.0 200 Ok
   Content-Disposition: attachment; filename="abcdefg"
   Content-Length: 9
   Content-Type: text/plain
@@ -201,7 +201,7 @@ nothing:
   ... GET /abcdefg/@@inline HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False)
-  HTTP/1.1 200 Ok
+  HTTP/1.0 200 Ok
   Content-Disposition: inline; filename="abcdefg"
   Content-Length: 9
   Content-Type: text/plain
@@ -220,7 +220,7 @@ handling of the data in the current context to be applied:
   ... GET /abcdefg/@@display HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False)
-  HTTP/1.1 200 Ok
+  HTTP/1.0 200 Ok
   Content-Length: 9
   Content-Type: text/plain
   <BLANKLINE>
