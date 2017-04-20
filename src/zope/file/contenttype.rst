@@ -15,6 +15,7 @@ content.  We'll upload a bit of HTML as a sample document:
 
   >>> from zope.testbrowser.wsgi import Browser
   >>> browser = Browser()
+  >>> browser.handleErrors = False
   >>> browser.addHeader("Authorization", "Basic mgr:mgrpw")
   >>> browser.addHeader("Accept-Language", "en-US")
   >>> browser.open("http://localhost/@@+/zope.file.File")
@@ -104,5 +105,5 @@ that's not going to work, and no changes are saved:
 
   >>> browser.getControl("Save").click()
 
-  >>> print browser.contents
+  >>> print(browser.contents)
   <...Selected encoding cannot decode document...

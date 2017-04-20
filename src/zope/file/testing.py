@@ -13,90 +13,56 @@
 """Functional tests for zope.file.
 
 """
+from __future__ import absolute_import, print_function, division
 __docformat__ = "reStructuredText"
 
 import doctest
-import os.path
-import shutil
-import tempfile
+import urllib
 
-import transaction
-from ZODB.DB import DB
-from ZODB.DemoStorage import DemoStorage
-from ZODB.blob import BlobStorage
-import zope.app.testing.functional
-from zope.component.hooks import setSite
-import ZODB.interfaces
+from zope.app.wsgi.testlayer import http
+from zope.browser.interfaces import IAdding
+from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
+from zope.component import queryMultiAdapter
+from zope.container.interfaces import IContainerNamesContainer
+from zope.container.interfaces import INameChooser
+from zope.interface import implementer
+from zope.publisher.browser import BrowserView
+from zope.security.proxy import removeSecurityProxy
+
+from zope.traversing.browser.absoluteurl import absoluteURL
+
+import zope.app.wsgi.testlayer
+import zope.security.checker
+import zope.testbrowser.wsgi
 
 import zope.file
 
-here = os.path.dirname(os.path.realpath(__file__))
 
-class FunctionalBlobTestSetup(zope.app.testing.functional.FunctionalTestSetup):
+class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
+                   zope.app.wsgi.testlayer.BrowserLayer):
+    pass
 
-    temp_dir_name = None
-    direct_blob_support = False
 
-    def setUp(self):
-        """Prepares for a functional test case."""
-        # Tear down the old demo storage (if any) and create a fresh one
-        transaction.abort()
-        self.db.close()
-        storage = DemoStorage("Demo Storage", self.base_storage)
-        if ZODB.interfaces.IBlobStorage.providedBy(storage):
-            # at least ZODB 3.9
-            self.direct_blob_support = True
-        else:
-            # make a dir
-            temp_dir_name = self.temp_dir_name = tempfile.mkdtemp()
-            # wrap storage with BlobStorage
-            storage = BlobStorage(temp_dir_name, storage)
-        self.db = self.app.db = DB(storage)
-        self.connection = None
+ZopeFileLayer = BrowserLayer(zope.file)
 
-    def tearDown(self):
-        """Cleans up after a functional test case."""
-        transaction.abort()
-        if self.connection:
-            self.connection.close()
-            self.connection = None
-        self.db.close()
-        if not self.direct_blob_support and self.temp_dir_name is not None:
-            # del dir named '__blob_test__%s' % self.name
-            shutil.rmtree(self.temp_dir_name, True)
-            self.temp_dir_name = None
-        setSite(None)
-
-config_file = os.path.join(here, "ftesting.zcml")
-
-class ZCMLLayer(zope.app.testing.functional.ZCMLLayer):
-
-    def setUp(self):
-        self.setup = FunctionalBlobTestSetup(self.config_file)
 
 def FunctionalBlobDocFileSuite(*paths, **kw):
     globs = kw.setdefault('globs', {})
-    globs['http'] = zope.app.testing.functional.HTTPCaller()
-    if 'getRootFolder' not in globs:
-        globs['getRootFolder'] = zope.app.testing.functional.getRootFolder
-    globs['sync'] = zope.app.testing.functional.sync
-
+    globs['getRootFolder'] = ZopeFileLayer.getRootFolder
     kw['package'] = doctest._normalize_module(kw.get('package'))
 
     kwsetUp = kw.get('setUp')
     def setUp(test):
-        FunctionalBlobTestSetup(config_file).setUp()
+        wsgi_app = ZopeFileLayer.make_wsgi_app()
+        def _http(query_str, *args, **kwargs):
+            # Strip leading \n
+            query_str = query_str[1:]
+            return http(wsgi_app, query_str, *args, **kwargs)
 
+        test.globs['http'] = _http
         if kwsetUp is not None:
             kwsetUp(test)
     kw['setUp'] = setUp
-
-    kwtearDown = kw.get('tearDown')
-    def tearDown(test):
-        if kwtearDown is not None:
-            kwtearDown(test)
-        FunctionalBlobTestSetup().tearDown()
-    kw['tearDown'] = tearDown
 
     if 'optionflags' not in kw:
         old = doctest.set_unittest_reportflags(0)
@@ -107,19 +73,76 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
                              | doctest.NORMALIZE_WHITESPACE)
 
     suite = doctest.DocFileSuite(*paths, **kw)
-    suite.layer = zope.app.testing.functional.Functional
+    suite.layer = ZopeFileLayer
     return suite
 
-ZopeFileLayer = ZCMLLayer(
-    config_file, __name__, "ZopeFileLayer")
 
-import zope.app.wsgi.testlayer
-import zope.testbrowser.wsgi
+@implementer(IAdding)
+class Adding(BrowserView):
+    # set in BrowserView.__init__
+    request = None
+    context = None
+    contentName = None # usually set by Adding traverser
+
+    def add(self, content):
+        container = self.context
+        name = self.contentName
+        chooser = INameChooser(container)
+
+        request = self.request
+        name = request.get('add_input_name', name)
+        assert name
+
+        chooser.checkName(name, content)
+
+        container[name] = content
+        self.contentName = name # Set the added object Name
+        return container[name]
 
 
-class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
-                   zope.app.wsgi.testlayer.BrowserLayer):
-    pass
+
+    def nextURL(self):
+        # Remove the security proxy to work around an issue with
+        # the pure-python implementation of sameProxiedObjects
+        # See https://github.com/zopefoundation/zope.proxy/issues/15
+        context = removeSecurityProxy(self.context)
+        return absoluteURL(context, self.request) + '/@@contents.html'
 
 
-BrowserLayer = BrowserLayer(zope.file)
+    def nameAllowed(self):
+        """Return whether names can be input by the user."""
+        return not IContainerNamesContainer.providedBy(self.context)
+
+
+
+class Contents(BrowserView):
+
+    error = ''
+    message = ''
+    normalButtons = False
+    specialButtons = False
+    supportsRename = False
+    contents = ViewPageTemplateFile('tests/contents.pt')
+    contentsMacros = contents
+
+    def listContentInfo(self):
+        return self._normalListContentsInfo()
+
+    def normalListContentInfo(self):
+        return self._normalListContentsInfo()
+
+    def _normalListContentsInfo(self):
+        # Remove the security proxy to work around an issue with
+        # iterating proxied BTree objects on PyPy (pure-python implementation
+        # of BTrees.) See https://github.com/zopefoundation/zope.security/issues/20
+        items = removeSecurityProxy(self.context.items())
+        info = map(self._extractContentInfo, items)
+        return info
+
+    def _extractContentInfo(self, item):
+        info = {}
+        oid, obj = item
+        info['id'] = info['cb_id'] = oid
+        info['object'] = obj
+        info['url'] = urllib.quote(oid.encode('utf-8'))
+        return info

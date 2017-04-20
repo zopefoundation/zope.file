@@ -22,22 +22,14 @@ from zope.file import testing
 
 def fromDocFile(path):
     suite = testing.FunctionalBlobDocFileSuite(path)
-    suite.layer = testing.ZopeFileLayer
-    return suite
-
-
-def fromBrowserFile(path):
-    globs = {'getRootFolder': testing.BrowserLayer.getRootFolder}
-    suite = testing.FunctionalBlobDocFileSuite(path, globs=globs)
-    suite.layer = testing.BrowserLayer
     return suite
 
 def test_suite():
     return unittest.TestSuite((
-        doctest.DocFileSuite("README.txt"),
-        doctest.DocFileSuite("browser.txt"),
-        fromDocFile("adapters.txt"),
-        fromBrowserFile('contenttype.txt'),
-        fromDocFile("download.txt"),
-        fromDocFile("upload.txt"),
+        doctest.DocFileSuite("../README.rst"),
+        doctest.DocFileSuite("../browser.rst"),
+        fromDocFile("../adapters.rst"),
+        fromDocFile('../contenttype.rst'),
+        fromDocFile("../download.rst"),
+        fromDocFile("../upload.rst"),
         ))

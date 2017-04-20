@@ -31,6 +31,7 @@
       name="zope.file.File"
       class=".upload.Upload"
       permission="zope.ManageContent"
+      zcml:condition="installed zope.browser"
       />
 
   <!-- Register menu related stuff if z.a.zcmlfiles is available only -->

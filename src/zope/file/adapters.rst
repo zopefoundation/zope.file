@@ -9,7 +9,7 @@ regular `File` object:
 
    >>> from zope.file.file import File
    >>> f = File(parameters=dict(charset='utf-8'))
-   >>> f.open('w').write("hello")
+   >>> with f.open('w') as _: _.write("hello")
 
 Now we can turn this file into a read-only file which we can read and
 whose size we can get:

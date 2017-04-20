@@ -1,13 +1,16 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="zope.file"
     >
 
   <!--
       Menu related configuration.
       Loaded from configure.zcml only if zope.app.zcmlfiles is available.
+	  That's the (old) default location that defines these menus.
   -->
+
   <browser:view
       for=".interfaces.IFile"
       menu="zmi_views" title="Upload"
@@ -30,6 +33,7 @@
       title="Zope File"
       class="zope.file.file.File"
       permission="zope.ManageContent"
+      zcml:condition="installed zope.browser"
       />
 
 </configure>

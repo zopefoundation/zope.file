@@ -4,46 +4,67 @@
     xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="zope.file"
     >
+    <include package="zope.app.publisher" file="meta.zcml" />
 
-  <include
-      zcml:condition="installed zope.app.zcmlfiles"
-      package="zope.app.zcmlfiles"
-      />
-  <include
-      zcml:condition="not-installed zope.app.zcmlfiles"
-      package="zope.app"
-      />
+    <include package="zope.browsermenu" file="meta.zcml" />
 
-  <include package="zope.login"/>
-  <include package="zope.password"/>
-  
-  <include package="zope.mimetype" file="meta.zcml"/>
-  <include package="zope.mimetype"/>
-  <include package="zope.file"/>
-  <include package="zope.formlib"/>
+    <include package="zope.app.publication" file="ftesting.zcml" />
 
-  <!-- Security -->
+    <browser:menu
+        id="zmi_views"
+        title="Views"
+        description="Menu for displaying alternate representations of an object"
+        />
 
-  <include package="zope.securitypolicy" file="meta.zcml" />
-  <include package="zope.securitypolicy" />
+    <browser:menu
+        id="zmi_actions"
+        title="Actions"
+        description="Menu for displaying actions to be performed"
+        />
 
-  <securityPolicy
-      component="zope.securitypolicy.zopepolicy.ZopeSecurityPolicy" />
-
-  <role
-      id="zope.Anonymous"
-      title="Everybody"
-      description="All users have this role implicitly"
-      />
-  <role id="zope.Manager" title="Site Manager" />
-
-  <grantAll role="zope.Manager" />
+    <browser:menu
+        id="zope.app.container.add"
+        title="Add"
+        description="Menu for objects to be added according to
+                     containment constraints"
+        interface="zope.app.publisher.interfaces.browser.AddMenu"
+        />
 
 
-  <unauthenticatedPrincipal id="zope.anybody" title="Unauthenticated User" />
+    <include package="zope.app.basicskin" />
 
-  <principal id="zope.mgr" title="Manager" login="mgr" password="mgrpw" />
+    <include package="zope.site" />
+    <include package="zope.container" />
 
-  <grant role="zope.Manager" principal="zope.mgr" />
+    <include package="zope.app.pagetemplate" />
+    <include package="zope.app.principalannotation" />
+    <include package="zope.app.publisher" />
+    <include package="zope.applicationcontrol" />
+    <include package="zope.copypastemove" />
+
+    <include package="zope.file" file="browser.zcml"/>
+    <include package="zope.file" file="menus.zcml"/>
+    <include package="zope.file"/>
+
+    <include package="zope.formlib"/>
+    <include package="zope.mimetype" file="meta.zcml"/>
+    <include package="zope.mimetype"/>
+    <include package="zope.traversing" />
+    <include package="zope.traversing.browser" />
+
+    <browser:view
+        name="+"
+        menu="zmi_actions" title="Add"
+        for="zope.site.interfaces.IFolder"
+        permission="zope.ManageContent"
+        class=".testing.Adding"
+        />
+    <browser:page
+        for="zope.site.interfaces.IFolder"
+        name="contents.html"
+        class=".testing.Contents"
+        permission="zope.ManageContent"
+        attribute="contents"
+        />
 
 </configure>

@@ -28,21 +28,21 @@ setup(
     author_email='zope-dev@zope.org',
     description='Efficient File Implementation for Zope Applications',
     long_description=(
-        read('README.txt')
+        read('README.rst')
         + '\n\n' +
         '.. contents::'
         + '\n\n' +
-        read('src', 'zope', 'file', 'README.txt')
+        read('src', 'zope', 'file', 'README.rst')
         + '\n\n' +
-        read('src', 'zope', 'file', 'download.txt')
+        read('src', 'zope', 'file', 'download.rst')
         + '\n\n' +
-        read('src', 'zope', 'file', 'upload.txt')
+        read('src', 'zope', 'file', 'upload.rst')
         + '\n\n' +
-        read('src', 'zope', 'file', 'contenttype.txt')
+        read('src', 'zope', 'file', 'contenttype.rst')
         + '\n\n' +
-        read('src', 'zope', 'file', 'browser.txt')
+        read('src', 'zope', 'file', 'browser.rst')
         + '\n\n' +
-        read('CHANGES.txt')
+        read('CHANGES.rst')
     ),
     keywords="zope3 web html ui file pattern",
     classifiers=[
@@ -54,6 +54,7 @@ setup(
         'Programming Language :: Python:: 2 :: Only',
         'Programming Language :: Python:: 2.7',
         'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Topic :: Internet :: WWW/HTTP',
@@ -66,25 +67,37 @@ setup(
     namespace_packages=['zope'],
     extras_require=dict(
         test=[
-            'zope.app.testing',
-            'zope.app.zcmlfiles',
+            'zope.app.basicskin',
+            'zope.app.http',
+            'zope.app.pagetemplate',
+            'zope.app.principalannotation',
+            'zope.app.publisher',
+            'zope.app.publication',
+            'zope.app.wsgi',
+            'zope.applicationcontrol',
+            'zope.copypastemove',
+            'zope.browser',
+            'zope.browsermenu',
             'zope.login',
             'zope.password',
+            'zope.principalregistry',
             'zope.securitypolicy',
             'zope.testbrowser>5',
             'zope.testrunner',
+        ],
+        browser=[
+            'zope.browser',
         ]
     ),
     install_requires=[
         'setuptools',
-        'ZODB3',
-        'zope.component>=3.8',
-        'zope.browser',
+        'ZODB',
+        'zope.component',
         'zope.container',
-        'zope.contenttype>=3.5',
+        'zope.contenttype',
         'zope.event',
         'zope.filerepresentation',
-        'zope.formlib>=4',
+        'zope.formlib',
         'zope.i18nmessageid',
         'zope.lifecycleevent',
         'zope.interface',
