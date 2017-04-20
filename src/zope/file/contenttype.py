@@ -13,21 +13,33 @@
 """The 'Content Type' view for files.
 
 """
+from __future__ import absolute_import, print_function, division
+
 __docformat__ = "reStructuredText"
+
+from contextlib import closing
 
 import zope.component
 import zope.formlib.form
 import zope.formlib.interfaces
 import zope.interface
-import zope.lifecycleevent
-import zope.mimetype.event
-import zope.mimetype.interfaces
-import zope.mimetype.source
 import zope.schema
-import zope.security.proxy
 
-from zope import mimetype
+from zope.mimetype.interfaces import IContentTypeEncoded
+from zope.mimetype.interfaces import IContentTypeInterface
+from zope.mimetype.interfaces import ICharsetCodec
+from zope.mimetype.interfaces import ICodecPreferredCharset
+
+from zope.mimetype.event import changeContentType
+
+from zope.mimetype.source import contentTypeSource
+from zope.mimetype.source import codecSource
+
 from zope.file.i18n import _
+
+from zope.security.proxy import removeSecurityProxy
+
+from zope.lifecycleevent import ObjectModifiedEvent
 
 
 def validateCodecUse(file, iface, codec, codec_field):
@@ -47,24 +59,27 @@ def validateCodecUse(file, iface, codec, codec_field):
     other errors the form determines are relevant.
 
     """
+    if codec is None or iface is None:
+        return []
+    if not iface.extends(IContentTypeEncoded):
+        return []
+
     errs = []
-    if (codec is not None) and (iface is not None):
-        if iface.extends(mimetype.interfaces.IContentTypeEncoded):
-            # Need to test that this codec can be used for this
-            # document:
-            f = file.open("r")
-            content_data = f.read()
-            f.close()
-            try:
-                text, consumed = codec.decode(content_data)
-                if consumed != len(content_data):
-                    raise UnicodeError("not all data decoded")
-            except UnicodeError:
-                err = zope.formlib.interfaces.WidgetInputError(
-                    codec_field.__name__,
-                    codec_field.field.title,
-                    "Selected encoding cannot decode document.")
-                errs.append(err)
+    # Need to test that this codec can be used for this
+    # document:
+    with closing(file.open("r")) as f:
+        content_data = f.read()
+
+    try:
+        _, consumed = codec.decode(content_data)
+        if consumed != len(content_data):
+            raise UnicodeError("not all data decoded")
+    except UnicodeError:
+        err = zope.formlib.interfaces.WidgetInputError(
+            codec_field.__name__,
+            codec_field.field.title,
+            "Selected encoding cannot decode document.")
+        errs.append(err)
     return errs
 
 
@@ -75,7 +90,7 @@ class ContentTypeForm(zope.formlib.form.Form):
             __name__="mimeType",
             title=_("Content type"),
             description=_("Type of document"),
-            source=mimetype.source.contentTypeSource,
+            source=contentTypeSource,
             ))
 
     encoding_field = zope.formlib.form.Field(
@@ -83,17 +98,15 @@ class ContentTypeForm(zope.formlib.form.Form):
             __name__="encoding",
             title=_("Encoding"),
             description=_("Character data encoding"),
-            source=mimetype.source.codecSource,
+            source=codecSource,
             required=False,
             ))
 
     def get_rendered_encoding(self):
         charset = self.context.parameters.get("charset")
         if charset:
-            return zope.component.queryUtility(
-                mimetype.interfaces.ICharsetCodec, charset)
-        else:
-            return None
+            return zope.component.queryUtility(ICharsetCodec, charset)
+
     encoding_field.get_rendered = get_rendered_encoding
 
     def get_rendered_mimeType(self):
@@ -101,17 +114,17 @@ class ContentTypeForm(zope.formlib.form.Form):
         # interface that the context provides; there *must* be only
         # one!
         ifaces = zope.interface.directlyProvidedBy(
-            zope.security.proxy.removeSecurityProxy(self.context))
+            removeSecurityProxy(self.context))
         for iface in ifaces:
-            if mimetype.interfaces.IContentTypeInterface.providedBy(iface):
+            if IContentTypeInterface.providedBy(iface):
                 return iface
-        return None
+
     mimeType_field.get_rendered = get_rendered_mimeType
 
     def setUpWidgets(self, ignore_request=False):
         # We need to re-compute the fields before initializing the widgets
         fields = [self.mimeType_field]
-        if mimetype.interfaces.IContentTypeEncoded.providedBy(self.context):
+        if IContentTypeEncoded.providedBy(self.context):
             self.have_encoded = True
             fields.append(self.encoding_field)
         else:
@@ -138,12 +151,11 @@ class ContentTypeForm(zope.formlib.form.Form):
             # content type.
             #
             iface = data["mimeType"]
-            unwrapped = zope.security.proxy.removeSecurityProxy(context)
-            mimetype.event.changeContentType(unwrapped, iface)
+            unwrapped = removeSecurityProxy(context)
+            changeContentType(unwrapped, iface)
 
         # update the encoding, but only if the new content type is encoded
-        encoded = mimetype.interfaces.IContentTypeEncoded.providedBy(
-            context)
+        encoded = IContentTypeEncoded.providedBy(context)
         # We only care about encoding if we're encoded now and were also
         # encoded before starting the re
         if encoded and self.have_encoded:
@@ -162,18 +174,18 @@ class ContentTypeForm(zope.formlib.form.Form):
             else:
                 if "charset" in context.parameters:
                     old_codec = zope.component.queryUtility(
-                        mimetype.interfaces.ICharsetCodec,
+                        ICharsetCodec,
                         context.parameters["charset"])
                 else:
                     old_codec = None
                 if getattr(old_codec, "name", None) != codec.name:
                     # use the preferred charset for the new codec
                     new_charset = zope.component.getUtility(
-                        mimetype.interfaces.ICodecPreferredCharset,
+                        ICodecPreferredCharset,
                         codec.name)
                     parameters = dict(context.parameters)
                     parameters["charset"] = new_charset.name
                     context.parameters = parameters
+
         zope.event.notify(
-            zope.lifecycleevent.ObjectModifiedEvent(
-                zope.security.proxy.removeSecurityProxy(context)))
+            ObjectModifiedEvent(removeSecurityProxy(context)))

@@ -13,7 +13,6 @@
 ##############################################################################
 """Setup for zope.file package
 
-$Id: setup.py 80818 2007-10-11 04:06:12Z srichter $
 """
 import os
 from setuptools import setup, find_packages
@@ -23,7 +22,7 @@ def read(*rnames):
 
 setup(
     name='zope.file',
-    version='0.6.3dev',
+    version='0.6.3.dev0',
     author='Zope Corporation and Contributors',
     author_email='zope-dev@zope.org',
     description='Efficient File Implementation for Zope Applications',
@@ -110,4 +109,6 @@ setup(
     ],
     include_package_data=True,
     zip_safe=False,
+    # XXX: This doesn't pick up the doctests.
+    test_suite='zope.file.tests',
 )
