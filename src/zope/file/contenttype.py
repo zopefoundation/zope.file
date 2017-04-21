@@ -13,7 +13,7 @@
 """The 'Content Type' view for files.
 
 """
-from __future__ import absolute_import, print_function, division
+
 
 __docformat__ = "reStructuredText"
 

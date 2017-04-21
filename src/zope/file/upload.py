@@ -13,7 +13,7 @@
 """Upload view for zope.file objects.
 
 """
-from __future__ import print_function, absolute_import, division
+
 __docformat__ = "reStructuredText"
 
 import re

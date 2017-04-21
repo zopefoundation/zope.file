@@ -13,7 +13,7 @@
 """Functional tests for zope.file.
 
 """
-from __future__ import absolute_import, print_function, division
+
 __docformat__ = "reStructuredText"
 
 import doctest

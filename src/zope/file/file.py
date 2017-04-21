@@ -13,7 +13,7 @@
 """Implementation of the file content type.
 
 """
-from __future__ import print_function, absolute_import, division
+
 
 from contextlib import closing
 import persistent
