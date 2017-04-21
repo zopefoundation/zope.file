@@ -175,5 +175,7 @@ class ManagementViewSelector(BrowserView):
                 self.request.response.redirect(redirect_url)
                 return u''
 
-        self.request.response.redirect('.') # Redirect to content/
-        return u''
+        raise AssertionError("We shouldn't get here") # pragma: no cover
+        # Redirect to content/
+        #self.request.response.redirect('.')
+        #return u''
