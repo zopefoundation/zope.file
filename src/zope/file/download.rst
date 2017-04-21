@@ -119,10 +119,9 @@ there's no data in this file, there are no body chunks:
 We still need to see how non-empty files are handled.  Let's write
 some data to our file object:
 
-  >>> w = f.open("w")
-  >>> w.write("some text")
-  >>> w.flush()
-  >>> w.close()
+  >>> with f.open("w") as w:
+  ...    _ = w.write(b"some text")
+  ...    w.flush()
   >>> transaction.commit()
 
 Now we can create a result object and see if we get the data we
@@ -130,16 +129,15 @@ expect:
 
   >>> result = DownloadResult(f)
   >>> L = list(result)
-  >>> "".join(L)
+  >>> b"".join(L)
   'some text'
 
 If the body content is really large, the iterator may provide more
 than one chunk of data:
 
-  >>> w = f.open("w")
-  >>> w.write("*" * 1024 * 1024)
-  >>> w.flush()
-  >>> w.close()
+  >>> with f.open("w") as w:
+  ...   _ = w.write(b"*" * 1024 * 1024)
+  ...   w.flush()
   >>> transaction.commit()
 
   >>> result = DownloadResult(f)
@@ -163,9 +161,8 @@ to add a file object where we can get to it using a browser:
 
   >>> f = File()
   >>> f.mimeType = "text/plain"
-  >>> w = f.open("w")
-  >>> w.write("some text")
-  >>> w.close()
+  >>> with f.open("w") as w:
+  ...    _ = w.write(b"some text")
   >>> transaction.commit()
 
   >>> getRootFolder()["abcdefg"] = f
@@ -175,10 +172,10 @@ to add a file object where we can get to it using a browser:
 Now, let's request the download view of the file object and check the
 result:
 
-  >>> print http("""
+  >>> print(http(b"""
   ... GET /abcdefg/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.0 200 Ok
   Content-Disposition: attachment; filename="abcdefg"
   Content-Length: 9
@@ -197,10 +194,10 @@ is used and there is not page that it's being loaded into: if this
 view is being referenced directly via the URL, the browser may show
 nothing:
 
-  >>> print http("""
+  >>> print(http(b"""
   ... GET /abcdefg/@@inline HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.0 200 Ok
   Content-Disposition: inline; filename="abcdefg"
   Content-Length: 9
@@ -216,10 +213,10 @@ This view is similar to the download and inline views, but no content
 disposition is specified at all.  This lets the browser's default
 handling of the data in the current context to be applied:
 
-  >>> print http("""
+  >>> print(http(b"""
   ... GET /abcdefg/@@display HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.0 200 Ok
   Content-Length: 9
   Content-Type: text/plain

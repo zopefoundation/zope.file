@@ -56,8 +56,12 @@ def getHeaders(context, contentType=None, downloadName=None,
         downloadName = downloadName or context.__name__
         if contentDisposition:
             if downloadName:
+                # Headers must be native strings. Under Py2, we probably
+                # need to encode the name
+                if str is bytes and not isinstance(downloadName, bytes):
+                    downloadName = downloadName.encode("utf-8")
                 contentDisposition += (
-                    '; filename="%s"' % downloadName.encode("utf-8")
+                    '; filename="%s"' % downloadName
                     )
             headers += ("Content-Disposition", contentDisposition),
 

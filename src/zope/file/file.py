@@ -55,7 +55,7 @@ class File(persistent.Persistent):
         return self._data.open(mode)
 
     def openDetached(self):
-        return file(self._data.committed(), 'rb')
+        return open(self._data.committed(), 'rb')
 
     @property
     def size(self):

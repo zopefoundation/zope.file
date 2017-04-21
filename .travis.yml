@@ -2,9 +2,8 @@ language: python
 sudo: false
 python:
   - 2.7
-#  - 3.4
-#  - 3.5
-#  - 3.6
+  - 3.5
+  - 3.6
   - pypy-5.4.1
 script:
   - coverage run -m zope.testrunner --test-path=src  --auto-color --auto-progress
@@ -17,6 +16,8 @@ notifications:
 install:
   - pip install -U pip setuptools
   - pip install -U coveralls coverage
+  - pip install -e  git+https://github.com/zopefoundation/zope.app.basicskin.git@python3#egg=zope.app.basicskin
+  - pip install -e  git+https://github.com/zopefoundation/zope.app.pagetemplate.git@python3#egg=zope.app.pagetemplate
   - pip install -U -e ".[test]"
 
 

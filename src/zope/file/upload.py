@@ -146,8 +146,37 @@ def updateBlob(ob, input):
 
     contentType = f.headers.get("Content-Type")
     mimeTypeGetter = zope.component.getUtility(IMimeTypeGetter)
-    mimeType = mimeTypeGetter(data=data, content_type=contentType,
-                              name=nameFinder(f))
+    try:
+        mimeType = mimeTypeGetter(data=data, content_type=contentType,
+                                  name=nameFinder(f))
+    except TypeError:
+        if contentType and contentType.startswith('text/html') and data:
+            # Under Python 3, a bug in smartMimeTypeGuesser fails when
+            # the data is bytes and the contentType is text/html. It attempts to
+            # introspect to determine if the data is really XHTML, but it does
+            # so by saying data.startswith('some str'). Since data is bytes and
+            # 'some str' is text, this raises a TypeError. We replicate
+            # a fixed version to warkaround
+            # See https://github.com/zopefoundation/zope.mimetype/issues/6
+            mimeType = 'text/html'
+
+            _xml_prefix_table = (
+                # prefix, mimeType, charset
+                (b"<?xml",                   "text/xml",     None),
+                (b"\xef\xbb\xbf<?xml",       "text/xml",     "utf-8"),    # w/ BOM
+                (b"\0<\0?\0x\0m\0l",         "text/xml",     "utf-16be"),
+                (b"<\0?\0x\0m\0l\0",         "text/xml",     "utf-16le"),
+                (b"\xfe\xff\0<\0?\0x\0m\0l", "text/xml",     "utf-16be"), # w/ BOM
+                (b"\xff\xfe<\0?\0x\0m\0l\0", "text/xml",     "utf-16le"), # w/ BOM
+                )
+            for prefix, _type, _charset in _xml_prefix_table:
+                if data.startswith(prefix):
+                    # don't use text/xml from the table, but take
+                    # advantage of the text/html hint (from the upload
+                    # or mimetypes.guess_type())
+                    mimeType = "application/xhtml+xml"
+                    break
+
     if not mimeType:
         mimeType = "application/octet-stream"
     if contentType:

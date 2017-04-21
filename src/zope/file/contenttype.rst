@@ -2,6 +2,24 @@
 Content type and encoding controls
 ==================================
 
+..
+  cgi.FieldStorage in Python 3.4--3.6, at least, has a __del__
+  method that wants to close the BytesIO file it has. This plays badly
+  with zope.publisher.browser.FileUpload which copies methods from the
+  BytesIO, but *does not* keep a reference to the FieldStorage. This
+  means that it's impossible to successfully upload file data without
+  getting "ValueError: I/O operation on closed file". We
+  remedy this by removing the offending method.
+
+  This was fixed in zope.publisher 4.3.1. See
+  https://github.com/zopefoundation/zope.publisher/pull/13
+
+  >>> import cgi
+  >>> try:
+  ...     del cgi.FieldStorage.__del__
+  ... except AttributeError:
+  ...     pass
+
 Files provide a view that supports controlling the MIME content type
 and, where applicable, the content encoding.  Content encoding is
 applicable based on the specific content type of the file.
@@ -9,9 +27,9 @@ applicable based on the specific content type of the file.
 Let's demonstrate the behavior of the form with a simple bit of
 content.  We'll upload a bit of HTML as a sample document:
 
-  >>> import StringIO
-  >>> sio = StringIO.StringIO("A <sub>little</sub> HTML."
-  ...                         "  There's one 8-bit Latin-1 character: \xd8.")
+  >>> from io import BytesIO
+  >>> sio = BytesIO(b"A <sub>little</sub> HTML."
+  ...               b"  There's one 8-bit Latin-1 character: \xd8.")
 
   >>> from zope.testbrowser.wsgi import Browser
   >>> browser = Browser()
@@ -53,7 +71,7 @@ The empty string value indicates that we have no encoding
 information:
 
   >>> ctrl = browser.getControl(name="form.encoding")
-  >>> print ctrl.value
+  >>> print(ctrl.value)
   ['']
 
 Let's now set the encoding value to an old favorite, Latin-1:
@@ -66,7 +84,7 @@ We now see the updated value in the form, and can check the value in
 the MIME content-type parameters on the object:
 
   >>> ctrl = browser.getControl(name="form.encoding")
-  >>> print ctrl.value
+  >>> print(ctrl.value)
   ['iso-8859-1']
 
   >>> file = getRootFolder()["sample.html"]

@@ -18,26 +18,31 @@ __docformat__ = "reStructuredText"
 
 import doctest
 import re
-import urllib
+
+from six.moves import urllib_parse as urllib
 
 from zope.app.wsgi.testlayer import http
 from zope.browser.interfaces import IAdding
+from zope.browsermenu.menu import getFirstMenuItem
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
-from zope.component import queryMultiAdapter
+
 from zope.container.interfaces import IContainerNamesContainer
 from zope.container.interfaces import INameChooser
+
 from zope.interface import implementer
+
 from zope.publisher.browser import BrowserView
+from zope.publisher.interfaces.browser import IBrowserPublisher
+
 from zope.security.proxy import removeSecurityProxy
 
 from zope.traversing.browser.absoluteurl import absoluteURL
 
 import zope.app.wsgi.testlayer
+import zope.file
 import zope.security.checker
 import zope.testbrowser.wsgi
 import zope.testing.renormalizing
-
-import zope.file
 
 
 class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
@@ -146,3 +151,29 @@ class Contents(BrowserView):
         info['object'] = obj
         info['url'] = urllib.quote(oid.encode('utf-8'))
         return info
+
+@implementer(IBrowserPublisher)
+class ManagementViewSelector(BrowserView):
+    """View that selects the first available management view.
+
+    Support 'zmi_views' actions like: 'javascript:alert("hello")',
+    '../view_on_parent.html' or '++rollover++'.
+    """
+    # Copied from zope.app.publication
+
+    def browserDefault(self, request):
+        return self, ()
+
+    def __call__(self):
+        item = getFirstMenuItem('zmi_views', self.context, self.request)
+
+        if item:
+            redirect_url = item['action']
+            if not (redirect_url.startswith('../') or \
+                    redirect_url.lower().startswith('javascript:') or \
+                    redirect_url.lower().startswith('++')):
+                self.request.response.redirect(redirect_url)
+                return u''
+
+        self.request.response.redirect('.') # Redirect to content/
+        return u''

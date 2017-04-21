@@ -29,9 +29,8 @@ Let's do some imports and create a new file object:
 
 Let's add some content to the file:
 
-  >>> w = f.open('w')
-  >>> w.write("some text")
-  >>> w.close()
+  >>> with f.open('w') as w:
+  ...    _ =  w.write(b"some text")
 
 The sized adapter now reflects the updated size:
 
@@ -42,9 +41,8 @@ The sized adapter now reflects the updated size:
 
 Let's try again with a larger file size:
 
-  >>> w = f.open('w')
-  >>> w.write("x" * (1024*1024+10))
-  >>> w.close()
+  >>> with f.open('w') as w:
+  ...    _ = w.write(b"x" * (1024*1024+10))
 
   >>> s.sizeForSorting()
   ('byte', 1048586)
@@ -56,9 +54,8 @@ Let's try again with a larger file size:
 
 And still a bigger size:
 
-  >>> w = f.open('w')
-  >>> w.write("x" * 3*512*1024)
-  >>> w.close()
+  >>> with f.open('w') as w:
+  ...    _ = w.write(b"x" * 3*512*1024)
 
   >>> s.sizeForSorting()
   ('byte', 1572864)

@@ -20,9 +20,11 @@ from setuptools import setup, find_packages
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
+version = '1.0.0.dev0'
+
 setup(
     name='zope.file',
-    version='0.6.3.dev0',
+    version=version,
     author='Zope Corporation and Contributors',
     author_email='zope-dev@zope.org',
     description='Efficient File Implementation for Zope Applications',
@@ -50,8 +52,11 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Zope Public License',
         'Programming Language :: Python',
-        'Programming Language :: Python:: 2 :: Only',
+        'Programming Language :: Python:: 2',
         'Programming Language :: Python:: 2.7',
+        'Programming Language :: Python:: 2',
+        'Programming Language :: Python:: 3.5',
+        'Programming Language :: Python:: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Natural Language :: English',
@@ -70,7 +75,6 @@ setup(
             'zope.app.http',
             'zope.app.pagetemplate',
             'zope.app.principalannotation',
-            'zope.app.publisher',
             'zope.app.publication',
             'zope.app.wsgi',
             'zope.applicationcontrol',
