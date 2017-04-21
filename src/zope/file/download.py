@@ -66,10 +66,10 @@ def getHeaders(context, contentType=None, downloadName=None,
         headers += ("Content-Length", str(contentLength)),
         return headers
 
+
+@zope.interface.implementer(zope.publisher.interfaces.http.IResult)
 class DownloadResult(object):
     """Result object for a download request."""
-
-    zope.interface.implements(zope.publisher.interfaces.http.IResult)
 
     def __init__(self, context):
         self._iter = bodyIterator(
@@ -82,10 +82,11 @@ CHUNK_SIZE = 64 * 1024
 
 
 def bodyIterator(f):
-    while True:
-        chunk = f.read(CHUNK_SIZE)
-        if not chunk:
-            f.close()
-            raise StopIteration()
-        yield chunk
-    f.close()
+    try:
+        while True:
+            chunk = f.read(CHUNK_SIZE)
+            if not chunk:
+                raise StopIteration()
+            yield chunk
+    finally:
+        f.close()

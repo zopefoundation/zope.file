@@ -93,8 +93,8 @@ Data is added by using a writer, which is also created using the
 The `write()` method is used to add data to the file, but note that
 the data may be buffered in the writer:
 
-  >>> w.write("some text ")
-  >>> w.write("more text")
+  >>> _ = w.write(b"some text ")
+  >>> _ = w.write(b"more text")
 
 The `flush()` method ensure that the data written so far is written to
 the file object:
@@ -111,8 +111,8 @@ We can now use a reader to see that the data has been written to the
 file:
 
   >>> w = f.open("w")
-  >>> w.write('some text more text')
-  >>> w.write(" still more")
+  >>> _ = w.write(b'some text more text')
+  >>> _ = w.write(b" still more")
   >>> w.close()
   >>> f.size
   30
@@ -127,35 +127,35 @@ skip forward in the data stream.  Simply passing an offset argument,
 we see that the current position is moved to that offset from the
 start of the file:
 
-  >>> r.seek(20)
+  >>> _ = r.seek(20)
   >>> r.read()
   'still more'
 
 That's equivalent to passing 0 as the `whence` argument:
 
-  >>> r.seek(20, 0)
+  >>> _ = r.seek(20, 0)
   >>> r.read()
   'still more'
 
 We can skip backward and forward relative to the current position by
 passing 1 for `whence`:
 
-  >>> r.seek(-10, 1)
+  >>> _ = r.seek(-10, 1)
   >>> r.read(5)
   'still'
-  >>> r.seek(2, 1)
+  >>> _ = r.seek(2, 1)
   >>> r.read()
   'ore'
 
 We can skip to some position backward from the end of the file using
 the value 2 for `whence`:
 
-  >>> r.seek(-10, 2)
+  >>> _ = r.seek(-10, 2)
   >>> r.read()
   'still more'
 
-  >>> r.seek(0)
-  >>> r.seek(-4, 2)
+  >>> _ = r.seek(0)
+  >>> _ = r.seek(-4, 2)
   >>> r.read()
   'more'
 
@@ -168,7 +168,7 @@ Attempting to write to a closed writer raises an exception:
   >>> w = f.open('w')
   >>> w.close()
 
-  >>> w.write('foobar')
+  >>> w.write(b'foobar')
   Traceback (most recent call last):
   ValueError: I/O operation on closed file
 
@@ -176,11 +176,10 @@ Similarly, using `seek()` or `tell()` on a closed reader raises an
 exception:
 
   >>> r.close()
-  >>> r.seek(0)
+  >>> _ = r.seek(0)
   Traceback (most recent call last):
   ValueError: I/O operation on closed file
 
   >>> r.tell()
   Traceback (most recent call last):
   ValueError: I/O operation on closed file
-

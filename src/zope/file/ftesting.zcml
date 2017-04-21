@@ -37,7 +37,9 @@
     <include package="zope.container" />
 
     <include package="zope.app.pagetemplate" />
+
     <include package="zope.app.principalannotation" />
+
     <include package="zope.app.publisher" />
     <include package="zope.applicationcontrol" />
     <include package="zope.copypastemove" />

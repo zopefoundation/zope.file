@@ -13,8 +13,9 @@
 """Implementation of the file content type.
 
 """
-__docformat__ = "reStructuredText"
+from __future__ import print_function, absolute_import, division
 
+from contextlib import closing
 import persistent
 
 import zope.location.interfaces
@@ -23,17 +24,16 @@ import zope.interface
 
 from ZODB.blob import Blob
 
+@zope.interface.implementer(
+    zope.file.interfaces.IFile,
+    zope.location.interfaces.ILocation)
 class File(persistent.Persistent):
-
-    zope.interface.implements(
-        zope.file.interfaces.IFile,
-        zope.location.interfaces.ILocation)
 
     __name__ = None
     __parent__ = None
     mimeType = None
 
-    _data = ""
+    _data = b""
     size = 0
 
     def __init__(self, mimeType=None, parameters=None):
@@ -43,10 +43,13 @@ class File(persistent.Persistent):
         else:
             parameters = dict(parameters)
         self.parameters = parameters
-        self._data = Blob()
-        fp = self._data.open('w')
-        fp.write('')
-        fp.close()
+        blob = self._data = Blob()
+        with blob.open('w') as fp:
+            fp.write(b'')
+
+    # Note that if we are security proxied, we may not be able to use
+    # __exit__ on the return values from open*, meaning they can't directly
+    # be used in a with statement.
 
     def open(self, mode="r"):
         return self._data.open(mode)
@@ -56,10 +59,13 @@ class File(persistent.Persistent):
 
     @property
     def size(self):
-        if self._data == "":
+        if self._data == b"": # pragma: no cover
+            # It shouldn't be possible to get here; perhaps this is
+            # compatibility code for old objects in existing databases?
             return 0
-        reader = self.open()
-        reader.seek(0,2)
-        size = int(reader.tell())
-        reader.close()
+
+        with closing(self.open()) as reader:
+            reader.seek(0,2)
+            size = int(reader.tell())
+
         return size

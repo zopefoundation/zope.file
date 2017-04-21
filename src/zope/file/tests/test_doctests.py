@@ -13,6 +13,8 @@
 """Unit tests for zope.file.
 
 """
+from __future__ import print_function, absolute_import, division
+
 __docformat__ = "reStructuredText"
 import doctest
 import unittest

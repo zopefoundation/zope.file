@@ -15,11 +15,9 @@ notifications:
   email: false
 
 install:
-# setuptools 35 apparently fails to properly include data files in the
-# wheels it builds, at least when used through pip
-  - pip install -U pip "setuptools<35"
+  - pip install -U pip setuptools
   - pip install -U coveralls coverage
-  - pip install -e ".[test]"
+  - pip install -U -e ".[test]"
 
 
 cache: pip

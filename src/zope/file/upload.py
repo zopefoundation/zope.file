@@ -13,24 +13,34 @@
 """Upload view for zope.file objects.
 
 """
+from __future__ import print_function, absolute_import, division
 __docformat__ = "reStructuredText"
 
 import re
-import zope.container.interfaces
+
 import zope.contenttype.parse
-import zope.lifecycleevent
 import zope.component
 import zope.event
 import zope.file.file
 import zope.formlib.form
-import zope.mimetype.event
-import zope.mimetype.interfaces
-import zope.schema
-import zope.security.proxy
 
-from zope import mimetype
+import zope.schema
 
 from zope.file.i18n import _
+
+from zope.container.interfaces import INameChooser
+
+from zope.mimetype.interfaces import IContentInfo
+from zope.mimetype.interfaces import ICodecPreferredCharset
+from zope.mimetype.interfaces import ICharsetCodec
+from zope.mimetype.interfaces import IContentTypeInterface
+from zope.mimetype.interfaces import IContentTypeEncoded
+from zope.mimetype.interfaces import IMimeTypeGetter
+
+from zope.mimetype.event import changeContentType
+
+from zope.security.proxy import removeSecurityProxy
+from zope.lifecycleevent import ObjectModifiedEvent
 
 _nameFinder = re.compile(r'(.*[\\/:])?(.+)')
 
@@ -63,21 +73,21 @@ class Upload(zope.formlib.form.AddForm):
 
     def add(self, ob):
         if self._name and self.context.nameAllowed():
-            nc = zope.container.interfaces.INameChooser(
-                self.context.context)
+            nc = INameChooser(self.context.context)
             name = nc.chooseName(self._name, ob)
             self.context.contentName = name
+
         res = super(Upload, self).add(ob)
         # We need to slam on an interface based on the effective MIME type;
         # start by getting the IContentInfo for ob:
-        ci = mimetype.interfaces.IContentInfo(ob, None)
-        if (ci is not None) and ci.effectiveMimeType:
+        ci = IContentInfo(ob, None)
+        if ci is not None and ci.effectiveMimeType:
             # we might have *something*
             iface = zope.component.queryUtility(
-                mimetype.interfaces.IContentTypeInterface,
+                IContentTypeInterface,
                 ci.effectiveMimeType)
             if iface is not None:
-                mimetype.event.changeContentType(ob, iface)
+                changeContentType(ob, iface)
         return res
 
     def _create_instance(self, data):
@@ -97,35 +107,31 @@ class Reupload(zope.formlib.form.Form):
     @zope.formlib.form.action(_("Edit"))
     def upload(self, action, data):
         context = self.context
+        old_codec = None
         if "charset" in context.parameters:
             old_codec = zope.component.queryUtility(
-                mimetype.interfaces.ICharsetCodec,
+                ICharsetCodec,
                 context.parameters["charset"])
-        else:
-            old_codec = None
 
         if data.get("data") is not None:
             updateBlob(context, self.request.form["form.data"])
 
         # update the encoding, but only if the new content type is encoded
-        encoded = mimetype.interfaces.IContentTypeEncoded.providedBy(
-            context)
+        encoded = IContentTypeEncoded.providedBy(context)
         if encoded and "charset" in context.parameters:
             codec = zope.component.queryUtility(
-                mimetype.interfaces.ICharsetCodec,
+                ICharsetCodec,
                 context.parameters["charset"])
             if codec and getattr(old_codec, "name", None) != codec.name:
                 # use the preferred charset for the new codec
                 new_charset = zope.component.getUtility(
-                    mimetype.interfaces.ICodecPreferredCharset,
+                    ICodecPreferredCharset,
                     codec.name)
                 parameters = dict(context.parameters)
                 parameters["charset"] = new_charset.name
                 context.parameters = parameters
         # these subscribers generally expect an unproxied object.
-        zope.event.notify(
-            zope.lifecycleevent.ObjectModifiedEvent(
-                zope.security.proxy.removeSecurityProxy(context)))
+        zope.event.notify(ObjectModifiedEvent(removeSecurityProxy(context)))
 
 
 def updateBlob(ob, input):
@@ -139,14 +145,13 @@ def updateBlob(ob, input):
     data = f.read()
 
     contentType = f.headers.get("Content-Type")
-    mimeTypeGetter = zope.component.getUtility(
-        mimetype.interfaces.IMimeTypeGetter)
+    mimeTypeGetter = zope.component.getUtility(IMimeTypeGetter)
     mimeType = mimeTypeGetter(data=data, content_type=contentType,
                               name=nameFinder(f))
     if not mimeType:
         mimeType = "application/octet-stream"
     if contentType:
-        major, minor, parameters = zope.contenttype.parse.parse(
+        _major, _minor, parameters = zope.contenttype.parse.parse(
             contentType)
         if "charset" in parameters:
             parameters["charset"] = parameters["charset"].lower()

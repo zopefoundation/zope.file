@@ -17,6 +17,7 @@ from __future__ import absolute_import, print_function, division
 __docformat__ = "reStructuredText"
 
 import doctest
+import re
 import urllib
 
 from zope.app.wsgi.testlayer import http
@@ -34,6 +35,7 @@ from zope.traversing.browser.absoluteurl import absoluteURL
 import zope.app.wsgi.testlayer
 import zope.security.checker
 import zope.testbrowser.wsgi
+import zope.testing.renormalizing
 
 import zope.file
 
@@ -51,7 +53,7 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
     globs['getRootFolder'] = ZopeFileLayer.getRootFolder
     kw['package'] = doctest._normalize_module(kw.get('package'))
 
-    kwsetUp = kw.get('setUp')
+    kwsetUp = kw.get('setUp', lambda x: None)
     def setUp(test):
         wsgi_app = ZopeFileLayer.make_wsgi_app()
         def _http(query_str, *args, **kwargs):
@@ -60,8 +62,7 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
             return http(wsgi_app, query_str, *args, **kwargs)
 
         test.globs['http'] = _http
-        if kwsetUp is not None:
-            kwsetUp(test)
+        kwsetUp(test)
     kw['setUp'] = setUp
 
     if 'optionflags' not in kw:
@@ -71,6 +72,12 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
                              | doctest.ELLIPSIS
                              | doctest.REPORT_NDIFF
                              | doctest.NORMALIZE_WHITESPACE)
+
+    kw['checker'] = zope.testing.renormalizing.RENormalizing([
+        # Py3k renders bytes where Python2 used native strings...
+        (re.compile(r"^b'"), "'"),
+        (re.compile(r'^b"'), '"'),
+    ])
 
     suite = doctest.DocFileSuite(*paths, **kw)
     suite.layer = ZopeFileLayer
@@ -99,8 +106,6 @@ class Adding(BrowserView):
         self.contentName = name # Set the added object Name
         return container[name]
 
-
-
     def nextURL(self):
         # Remove the security proxy to work around an issue with
         # the pure-python implementation of sameProxiedObjects
@@ -108,11 +113,9 @@ class Adding(BrowserView):
         context = removeSecurityProxy(self.context)
         return absoluteURL(context, self.request) + '/@@contents.html'
 
-
     def nameAllowed(self):
         """Return whether names can be input by the user."""
         return not IContainerNamesContainer.providedBy(self.context)
-
 
 
 class Contents(BrowserView):
@@ -126,9 +129,6 @@ class Contents(BrowserView):
     contentsMacros = contents
 
     def listContentInfo(self):
-        return self._normalListContentsInfo()
-
-    def normalListContentInfo(self):
         return self._normalListContentsInfo()
 
     def _normalListContentsInfo(self):
