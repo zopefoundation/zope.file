@@ -18,7 +18,8 @@ import os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
 
 version = '1.0.0.dev0'
 
@@ -114,6 +115,4 @@ setup(
     ],
     include_package_data=True,
     zip_safe=False,
-    # XXX: This doesn't pick up the doctests.
-    test_suite='zope.file.tests',
 )
