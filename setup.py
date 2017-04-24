@@ -73,9 +73,9 @@ setup(
     namespace_packages=['zope'],
     extras_require=dict(
         test=[
-            'zope.app.basicskin',
+            'zope.app.basicskin >= 4.0.0',
             'zope.app.http',
-            'zope.app.pagetemplate',
+            'zope.app.pagetemplate >= 4.0.0',
             'zope.app.principalannotation',
             'zope.app.publication',
             'zope.app.wsgi',
@@ -108,7 +108,7 @@ setup(
         'zope.interface',
         'zope.location',
         'zope.mimetype>=2.1',
-        'zope.publisher',
+        'zope.publisher >= 4.3.1',
         'zope.schema',
         'zope.security',
         'zope.size',

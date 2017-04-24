@@ -2,24 +2,6 @@
 Content type and encoding controls
 ==================================
 
-..
-  cgi.FieldStorage in Python 3.4--3.6, at least, has a __del__
-  method that wants to close the BytesIO file it has. This plays badly
-  with zope.publisher.browser.FileUpload which copies methods from the
-  BytesIO, but *does not* keep a reference to the FieldStorage. This
-  means that it's impossible to successfully upload file data without
-  getting "ValueError: I/O operation on closed file". We
-  remedy this by removing the offending method.
-
-  This was fixed in zope.publisher 4.3.1. See
-  https://github.com/zopefoundation/zope.publisher/pull/13
-
-  >>> import cgi
-  >>> try:
-  ...     del cgi.FieldStorage.__del__
-  ... except AttributeError:
-  ...     pass
-
 Files provide a view that supports controlling the MIME content type
 and, where applicable, the content encoding.  Content encoding is
 applicable based on the specific content type of the file.

@@ -17,8 +17,6 @@ notifications:
 install:
   - pip install -U pip setuptools
   - pip install -U coveralls coverage
-  - pip install -e  git+https://github.com/zopefoundation/zope.app.basicskin.git#egg=zope.app.basicskin
-  - pip install -e  git+https://github.com/zopefoundation/zope.app.pagetemplate.git#egg=zope.app.pagetemplate
   - pip install -U -e ".[test]"
 
 
