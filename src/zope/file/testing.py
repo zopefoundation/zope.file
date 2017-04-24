@@ -112,11 +112,7 @@ class Adding(BrowserView):
         return container[name]
 
     def nextURL(self):
-        # Remove the security proxy to work around an issue with
-        # the pure-python implementation of sameProxiedObjects
-        # See https://github.com/zopefoundation/zope.proxy/issues/15
-        context = removeSecurityProxy(self.context)
-        return absoluteURL(context, self.request) + '/@@contents.html'
+        return absoluteURL(self.context, self.request) + '/@@contents.html'
 
     def nameAllowed(self):
         """Return whether names can be input by the user."""
@@ -141,7 +137,7 @@ class Contents(BrowserView):
         # iterating proxied BTree objects on PyPy (pure-python implementation
         # of BTrees.) See https://github.com/zopefoundation/zope.security/issues/20
         items = removeSecurityProxy(self.context.items())
-        info = map(self._extractContentInfo, items)
+        info = [self._extractContentInfo(x) for x in items]
         return info
 
     def _extractContentInfo(self, item):
@@ -175,7 +171,7 @@ class ManagementViewSelector(BrowserView):
                 self.request.response.redirect(redirect_url)
                 return u''
 
+        # The zope.app.publication version would redirect to /
+        # with self.request.response.redirect('.) and return u''.
+        # But our tests never get here.
         raise AssertionError("We shouldn't get here") # pragma: no cover
-        # Redirect to content/
-        #self.request.response.redirect('.')
-        #return u''
