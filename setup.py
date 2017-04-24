@@ -112,7 +112,7 @@ setup(
         'zope.mimetype >= 2.2',
         'zope.publisher >= 4.3.1',
         'zope.schema',
-        'zope.security',
+        'zope.security >= 4.1.0',
         'zope.size',
     ],
     include_package_data=True,

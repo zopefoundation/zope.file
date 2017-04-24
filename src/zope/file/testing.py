@@ -125,10 +125,7 @@ class Contents(BrowserView):
         return self._normalListContentsInfo()
 
     def _normalListContentsInfo(self):
-        # Remove the security proxy to work around an issue with
-        # iterating proxied BTree objects on PyPy (pure-python implementation
-        # of BTrees.) See https://github.com/zopefoundation/zope.security/issues/20
-        items = removeSecurityProxy(self.context.items())
+        items = self.context.items()
         info = [self._extractContentInfo(x) for x in items]
         return info
 
