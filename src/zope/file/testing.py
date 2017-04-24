@@ -17,7 +17,6 @@
 __docformat__ = "reStructuredText"
 
 import doctest
-import re
 
 from six.moves import urllib_parse as urllib
 
@@ -42,7 +41,6 @@ import zope.app.wsgi.testlayer
 import zope.file
 import zope.security.checker
 import zope.testbrowser.wsgi
-import zope.testing.renormalizing
 
 
 class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
@@ -77,12 +75,6 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
                              | doctest.ELLIPSIS
                              | doctest.REPORT_NDIFF
                              | doctest.NORMALIZE_WHITESPACE)
-
-    kw['checker'] = zope.testing.renormalizing.RENormalizing([
-        # Py3k renders bytes where Python2 used native strings...
-        (re.compile(r"^b'"), "'"),
-        (re.compile(r'^b"'), '"'),
-    ])
 
     suite = doctest.DocFileSuite(*paths, **kw)
     suite.layer = ZopeFileLayer
