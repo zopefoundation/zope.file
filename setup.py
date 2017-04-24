@@ -64,7 +64,7 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Topic :: Internet :: WWW/HTTP',
-        'Framework :: Zope3'
+        'Framework :: Zope3',
     ],
     url='http://cheeseshop.python.org/pypi/zope.file',
     license='ZPL 2.1',
@@ -109,7 +109,7 @@ setup(
         'zope.lifecycleevent',
         'zope.interface',
         'zope.location',
-        'zope.mimetype >= 2.1',
+        'zope.mimetype >= 2.2',
         'zope.publisher >= 4.3.1',
         'zope.schema',
         'zope.security',

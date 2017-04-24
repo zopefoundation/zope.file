@@ -63,7 +63,7 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
         wsgi_app = ZopeFileLayer.make_wsgi_app()
         def _http(query_str, *args, **kwargs):
             # Strip leading \n
-            query_str = query_str[1:]
+            query_str = query_str.lstrip()
             return http(wsgi_app, query_str, *args, **kwargs)
 
         test.globs['http'] = _http
