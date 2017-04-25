@@ -13,7 +13,7 @@
 """Unit tests for zope.file.
 
 """
-from __future__ import print_function, absolute_import, division
+
 
 __docformat__ = "reStructuredText"
 import doctest
@@ -21,17 +21,29 @@ import unittest
 
 from zope.file import testing
 
+from zope.testing import renormalizing
+import re
 
-def fromDocFile(path):
-    suite = testing.FunctionalBlobDocFileSuite(path)
+checker = renormalizing.RENormalizing([
+    # Python 3 unicode removed the "u".
+    (re.compile("u('.*?')"), r"\1"),
+    (re.compile('u(".*?")'), r"\1"),
+    # Python 3 bytes added the "b".
+    (re.compile("b('.*?')"), r"\1"),
+    (re.compile('b(".*?")'), r"\1"),
+])
+
+
+def fromDocFile(path, **kwargs):
+    suite = testing.FunctionalBlobDocFileSuite(path, **kwargs)
     return suite
 
 def test_suite():
     return unittest.TestSuite((
-        doctest.DocFileSuite("../README.rst"),
-        doctest.DocFileSuite("../browser.rst"),
-        fromDocFile("../adapters.rst"),
-        fromDocFile('../contenttype.rst'),
-        fromDocFile("../download.rst"),
-        fromDocFile("../upload.rst"),
+        doctest.DocFileSuite("../README.rst", checker=checker),
+        doctest.DocFileSuite("../browser.rst", checker=checker),
+        fromDocFile("../adapters.rst", checker=checker),
+        fromDocFile('../contenttype.rst', checker=checker),
+        fromDocFile("../download.rst", checker=checker),
+        fromDocFile("../upload.rst", checker=checker),
         ))

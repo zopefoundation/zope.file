@@ -18,11 +18,14 @@ import os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
+
+version = '1.0.0.dev0'
 
 setup(
     name='zope.file',
-    version='0.6.3.dev0',
+    version=version,
     author='Zope Corporation and Contributors',
     author_email='zope-dev@zope.org',
     description='Efficient File Implementation for Zope Applications',
@@ -50,14 +53,18 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Zope Public License',
         'Programming Language :: Python',
-        'Programming Language :: Python:: 2 :: Only',
+        'Programming Language :: Python:: 2',
         'Programming Language :: Python:: 2.7',
+        'Programming Language :: Python:: 3',
+        'Programming Language :: Python:: 3.4',
+        'Programming Language :: Python:: 3.5',
+        'Programming Language :: Python:: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Topic :: Internet :: WWW/HTTP',
-        'Framework :: Zope3'
+        'Framework :: Zope3',
     ],
     url='http://cheeseshop.python.org/pypi/zope.file',
     license='ZPL 2.1',
@@ -66,22 +73,23 @@ setup(
     namespace_packages=['zope'],
     extras_require=dict(
         test=[
-            'zope.app.basicskin',
+            'zope.app.basicskin >= 4.0.0',
             'zope.app.http',
-            'zope.app.pagetemplate',
+            'zope.app.pagetemplate >= 4.0.0',
             'zope.app.principalannotation',
-            'zope.app.publisher',
             'zope.app.publication',
             'zope.app.wsgi',
+
             'zope.applicationcontrol',
             'zope.copypastemove',
             'zope.browser',
             'zope.browsermenu',
             'zope.login',
             'zope.password',
+            'zope.proxy >= 4.2.1',
             'zope.principalregistry',
             'zope.securitypolicy',
-            'zope.testbrowser>5',
+            'zope.testbrowser >= 5.2',
             'zope.testrunner',
         ],
         browser=[
@@ -101,14 +109,12 @@ setup(
         'zope.lifecycleevent',
         'zope.interface',
         'zope.location',
-        'zope.mimetype>=2.1',
-        'zope.publisher',
+        'zope.mimetype >= 2.2',
+        'zope.publisher >= 4.3.1',
         'zope.schema',
-        'zope.security',
+        'zope.security >= 4.1.0',
         'zope.size',
     ],
     include_package_data=True,
     zip_safe=False,
-    # XXX: This doesn't pick up the doctests.
-    test_suite='zope.file.tests',
 )

@@ -13,31 +13,35 @@
 """Functional tests for zope.file.
 
 """
-from __future__ import absolute_import, print_function, division
+
 __docformat__ = "reStructuredText"
 
 import doctest
-import re
-import urllib
+
+from six.moves import urllib_parse as urllib
 
 from zope.app.wsgi.testlayer import http
+from zope.app.wsgi.testlayer import FakeResponse
 from zope.browser.interfaces import IAdding
+from zope.browsermenu.menu import getFirstMenuItem
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
-from zope.component import queryMultiAdapter
+
 from zope.container.interfaces import IContainerNamesContainer
 from zope.container.interfaces import INameChooser
+
 from zope.interface import implementer
+
 from zope.publisher.browser import BrowserView
+from zope.publisher.interfaces.browser import IBrowserPublisher
+
 from zope.security.proxy import removeSecurityProxy
 
 from zope.traversing.browser.absoluteurl import absoluteURL
 
 import zope.app.wsgi.testlayer
+import zope.file
 import zope.security.checker
 import zope.testbrowser.wsgi
-import zope.testing.renormalizing
-
-import zope.file
 
 
 class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
@@ -46,6 +50,26 @@ class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
 
 
 ZopeFileLayer = BrowserLayer(zope.file)
+
+
+class _FakeResponse(FakeResponse):
+    if str is bytes:
+        # py2 has a bug, assuming headers are in unicode already, or
+        # are decodable implicitly to ascii
+        def getHeaders(self):
+            headers = super(_FakeResponse, self).getHeaders()
+            result = []
+            for key, value in headers:
+                assert isinstance(key, str)
+                assert isinstance(value, str)
+                result.append((key.decode('latin-1'),
+                               value.decode('latin-1')))
+            return result
+
+        # we also need to ensure we get something that can be printed
+        # in ascii and produce the same output as Py3.
+        def __str__(self):
+            return self.getOutput().decode('latin-1').encode("utf-8")
 
 
 def FunctionalBlobDocFileSuite(*paths, **kw):
@@ -58,8 +82,10 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
         wsgi_app = ZopeFileLayer.make_wsgi_app()
         def _http(query_str, *args, **kwargs):
             # Strip leading \n
-            query_str = query_str[1:]
-            return http(wsgi_app, query_str, *args, **kwargs)
+            query_str = query_str.lstrip()
+            response = http(wsgi_app, query_str, *args, **kwargs)
+            response.__class__ = _FakeResponse
+            return response
 
         test.globs['http'] = _http
         kwsetUp(test)
@@ -72,12 +98,6 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
                              | doctest.ELLIPSIS
                              | doctest.REPORT_NDIFF
                              | doctest.NORMALIZE_WHITESPACE)
-
-    kw['checker'] = zope.testing.renormalizing.RENormalizing([
-        # Py3k renders bytes where Python2 used native strings...
-        (re.compile(r"^b'"), "'"),
-        (re.compile(r'^b"'), '"'),
-    ])
 
     suite = doctest.DocFileSuite(*paths, **kw)
     suite.layer = ZopeFileLayer
@@ -107,11 +127,7 @@ class Adding(BrowserView):
         return container[name]
 
     def nextURL(self):
-        # Remove the security proxy to work around an issue with
-        # the pure-python implementation of sameProxiedObjects
-        # See https://github.com/zopefoundation/zope.proxy/issues/15
-        context = removeSecurityProxy(self.context)
-        return absoluteURL(context, self.request) + '/@@contents.html'
+        return absoluteURL(self.context, self.request) + '/@@contents.html'
 
     def nameAllowed(self):
         """Return whether names can be input by the user."""
@@ -132,11 +148,8 @@ class Contents(BrowserView):
         return self._normalListContentsInfo()
 
     def _normalListContentsInfo(self):
-        # Remove the security proxy to work around an issue with
-        # iterating proxied BTree objects on PyPy (pure-python implementation
-        # of BTrees.) See https://github.com/zopefoundation/zope.security/issues/20
-        items = removeSecurityProxy(self.context.items())
-        info = map(self._extractContentInfo, items)
+        items = self.context.items()
+        info = [self._extractContentInfo(x) for x in items]
         return info
 
     def _extractContentInfo(self, item):
@@ -146,3 +159,30 @@ class Contents(BrowserView):
         info['object'] = obj
         info['url'] = urllib.quote(oid.encode('utf-8'))
         return info
+
+
+@implementer(IBrowserPublisher)
+class ManagementViewSelector(BrowserView):
+    """View that selects the first available management view.
+
+    Support 'zmi_views' actions like: 'javascript:alert("hello")',
+    '../view_on_parent.html' or '++rollover++'.
+    """
+    # Copied from zope.app.publication
+    # Simplified to assert just the test case we expect.
+
+    def browserDefault(self, request):
+        return self, ()
+
+    def __call__(self):
+        item = getFirstMenuItem('zmi_views', self.context, self.request)
+        assert item
+        redirect_url = item['action']
+        if not redirect_url.lower().startswith(('../', 'javascript:', '++')):
+            self.request.response.redirect(redirect_url)
+            return u''
+
+        # The zope.app.publication version would redirect to /
+        # with self.request.response.redirect('.) and return u''.
+        # But our tests never get here.
+        raise AssertionError("We shouldn't get here") # pragma: no cover

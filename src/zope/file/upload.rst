@@ -4,9 +4,9 @@ Uploading a new file
 
 There's a simple view for uploading a new file.  Let's try it:
 
-  >>> from StringIO import StringIO
+  >>> from io import BytesIO as StringIO
 
-  >>> sio = StringIO("some text")
+  >>> sio = StringIO(b"some text")
 
   >>> from zope.testbrowser.wsgi import Browser
   >>> browser = Browser()
@@ -24,7 +24,7 @@ There's a simple view for uploading a new file.  Let's try it:
 Now, let's request the download view of the file object and check the
 result:
 
-  >>> print(http("""
+  >>> print(http(b"""
   ... GET /plain.txt/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False))
@@ -45,7 +45,7 @@ expected MIME type interface:
 
 We can upload new data into our file object as well:
 
-  >>> sio = StringIO("new text")
+  >>> sio = StringIO(b"new text")
   >>> browser.open("http://localhost/plain.txt/@@edit.html")
 
   >>> ctrl = browser.getControl(name="form.data")
@@ -56,7 +56,7 @@ We can upload new data into our file object as well:
 Now, let's request the download view of the file object and check the
 result:
 
-  >>> print(http("""
+  >>> print(http(b"""
   ... GET /plain.txt/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False))
@@ -72,8 +72,8 @@ expect from browsers generally, and MSIE most significantly), we can
 see that the MIME type machinery will improve the information where
 possible:
 
-  >>> sio = StringIO("<?xml version='1.0' encoding='utf-8'?>\n"
-  ...                "<html>...</html>\n")
+  >>> sio = StringIO(b"<?xml version='1.0' encoding='utf-8'?>\n"
+  ...                b"<html>...</html>\n")
 
   >>> browser.open("http://localhost/@@+/zope.file.File")
 
@@ -85,7 +85,7 @@ possible:
 Again, we'll request the download view of the file object and check
 the result:
 
-  >>> print(http("""
+  >>> print(http(b"""
   ... GET /simple.html/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False))
@@ -102,8 +102,8 @@ Further, if a browser is bad and sends a full path as the file name (as
 sometimes happens in many browsers, apparently), the name is correctly
 truncated and changed.
 
-  >>> sio = StringIO("<?xml version='1.0' encoding='utf-8'?>\n"
-  ...                "<html>...</html>\n")
+  >>> sio = StringIO(b"<?xml version='1.0' encoding='utf-8'?>\n"
+  ...                b"<html>...</html>\n")
 
   >>> browser.open("http://localhost/@@+/zope.file.File")
 
@@ -116,7 +116,7 @@ truncated and changed.
 Again, we'll request the download view of the file object and check
 the result:
 
-  >>> print(http("""
+  >>> print(http(b"""
   ... GET /naughty%20name.html/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False))
@@ -147,7 +147,7 @@ a counter.
   >>> browser.open("http://localhost/@@+/zope.file.File")
 
   >>> ctrl = browser.getControl(name="form.data")
-  >>> sio = StringIO("some data")
+  >>> sio = StringIO(b"some data")
   >>> ctrl.add_file(
   ...     sio, "text/html; charset=utf-8", "name.html")
   >>> browser.getControl("Add").click()

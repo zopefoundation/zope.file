@@ -9,7 +9,7 @@ regular `File` object:
 
    >>> from zope.file.file import File
    >>> f = File(parameters=dict(charset='utf-8'))
-   >>> with f.open('w') as _: _.write("hello")
+   >>> with f.open('w') as _: _ = _.write(b"hello")
 
 Now we can turn this file into a read-only file which we can read and
 whose size we can get:
@@ -25,14 +25,14 @@ whose size we can get:
 Writing to this read-only file is impossible, as the interface does
 not require it:
 
-   >>> r.write("some more content")
+   >>> r.write(b"some more content")
    Traceback (most recent call last):
    AttributeError: 'ReadFileAdapter' object has no attribute 'write'
 
 With a write-file the opposite happens. We can write but not read:
 
    >>> w = IWriteFile(f)
-   >>> w.write("some more content")
+   >>> w.write(b"some more content")
    >>> w.read()
    Traceback (most recent call last):
    AttributeError: 'WriteFileAdapter' object has no attribute 'read'

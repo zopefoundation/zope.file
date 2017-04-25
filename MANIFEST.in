@@ -1,7 +1,6 @@
 include *.py
 include *.txt
 include *.rst
-include LICENSE
 include buildout.cfg
 include setup.cfg
 include .coveragerc

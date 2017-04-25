@@ -13,7 +13,7 @@
 """Upload view for zope.file objects.
 
 """
-from __future__ import print_function, absolute_import, division
+
 __docformat__ = "reStructuredText"
 
 import re
@@ -145,11 +145,13 @@ def updateBlob(ob, input):
     data = f.read()
 
     contentType = f.headers.get("Content-Type")
+
     mimeTypeGetter = zope.component.getUtility(IMimeTypeGetter)
     mimeType = mimeTypeGetter(data=data, content_type=contentType,
                               name=nameFinder(f))
     if not mimeType:
         mimeType = "application/octet-stream"
+
     if contentType:
         _major, _minor, parameters = zope.contenttype.parse.parse(
             contentType)
@@ -160,6 +162,10 @@ def updateBlob(ob, input):
     else:
         ob.mimeType = mimeType
         ob.parameters = {}
+
     w = ob.open("w")
-    w.write(data)
-    w.close()
+    try:
+        # if we're security proxied, may not be able to use a `with`
+        w.write(data)
+    finally:
+        w.close()

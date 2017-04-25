@@ -9,9 +9,9 @@ applicable based on the specific content type of the file.
 Let's demonstrate the behavior of the form with a simple bit of
 content.  We'll upload a bit of HTML as a sample document:
 
-  >>> import StringIO
-  >>> sio = StringIO.StringIO("A <sub>little</sub> HTML."
-  ...                         "  There's one 8-bit Latin-1 character: \xd8.")
+  >>> from io import BytesIO
+  >>> sio = BytesIO(b"A <sub>little</sub> HTML."
+  ...               b"  There's one 8-bit Latin-1 character: \xd8.")
 
   >>> from zope.testbrowser.wsgi import Browser
   >>> browser = Browser()
@@ -53,7 +53,7 @@ The empty string value indicates that we have no encoding
 information:
 
   >>> ctrl = browser.getControl(name="form.encoding")
-  >>> print ctrl.value
+  >>> print(ctrl.value)
   ['']
 
 Let's now set the encoding value to an old favorite, Latin-1:
@@ -66,7 +66,7 @@ We now see the updated value in the form, and can check the value in
 the MIME content-type parameters on the object:
 
   >>> ctrl = browser.getControl(name="form.encoding")
-  >>> print ctrl.value
+  >>> print(ctrl.value)
   ['iso-8859-1']
 
   >>> file = getRootFolder()["sample.html"]

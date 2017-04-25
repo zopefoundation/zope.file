@@ -13,7 +13,7 @@
 """Implementation of the file content type.
 
 """
-from __future__ import print_function, absolute_import, division
+
 
 from contextlib import closing
 import persistent
@@ -55,7 +55,7 @@ class File(persistent.Persistent):
         return self._data.open(mode)
 
     def openDetached(self):
-        return file(self._data.committed(), 'rb')
+        return open(self._data.committed(), 'rb')
 
     @property
     def size(self):

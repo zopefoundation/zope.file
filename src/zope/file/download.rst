@@ -1,6 +1,6 @@
-========================
-Downloading File Objects
-========================
+==========================
+ Downloading File Objects
+==========================
 
 The file content type provides a view used to download the file,
 regardless of the browser's default behavior for the content type.
@@ -26,7 +26,7 @@ download support:
   >>> transaction.commit()
 
 Headers
--------
+=======
 
 Now, let's get the headers for this file.  We use a utility function called
 ``getHeaders``:
@@ -95,7 +95,7 @@ an argument to ``getHeaders``:
    ('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
-If the `contentDisposition` argument is not provided, none will be
+If the ``contentDisposition`` argument is not provided, none will be
 included in the headers:
 
   >>> headers = getHeaders(f)
@@ -105,7 +105,7 @@ included in the headers:
 
 
 Body
-----
+====
 
 We use DownloadResult to deliver the content to the browser.  Since
 there's no data in this file, there are no body chunks:
@@ -119,10 +119,9 @@ there's no data in this file, there are no body chunks:
 We still need to see how non-empty files are handled.  Let's write
 some data to our file object:
 
-  >>> w = f.open("w")
-  >>> w.write("some text")
-  >>> w.flush()
-  >>> w.close()
+  >>> with f.open("w") as w:
+  ...    _ = w.write(b"some text")
+  ...    w.flush()
   >>> transaction.commit()
 
 Now we can create a result object and see if we get the data we
@@ -130,16 +129,15 @@ expect:
 
   >>> result = DownloadResult(f)
   >>> L = list(result)
-  >>> "".join(L)
+  >>> b"".join(L)
   'some text'
 
 If the body content is really large, the iterator may provide more
 than one chunk of data:
 
-  >>> w = f.open("w")
-  >>> w.write("*" * 1024 * 1024)
-  >>> w.flush()
-  >>> w.close()
+  >>> with f.open("w") as w:
+  ...   _ = w.write(b"*" * 1024 * 1024)
+  ...   w.flush()
   >>> transaction.commit()
 
   >>> result = DownloadResult(f)
@@ -155,7 +153,7 @@ yield additional data:
 
 
 The Download View
------------------
+=================
 
 Now that we've seen the ``getHeaders`` function and the result object,
 let's take a look at the basic download view that uses them.  We'll need
@@ -163,9 +161,8 @@ to add a file object where we can get to it using a browser:
 
   >>> f = File()
   >>> f.mimeType = "text/plain"
-  >>> w = f.open("w")
-  >>> w.write("some text")
-  >>> w.close()
+  >>> with f.open("w") as w:
+  ...    _ = w.write(b"some text")
   >>> transaction.commit()
 
   >>> getRootFolder()["abcdefg"] = f
@@ -175,10 +172,10 @@ to add a file object where we can get to it using a browser:
 Now, let's request the download view of the file object and check the
 result:
 
-  >>> print http("""
+  >>> print(http(b"""
   ... GET /abcdefg/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.0 200 Ok
   Content-Disposition: attachment; filename="abcdefg"
   Content-Length: 9
@@ -188,7 +185,7 @@ result:
 
 
 The Inline View
----------------
+===============
 
 In addition, it is sometimes useful to view the data inline instead of
 downloading it.  A basic inline view is provided for this use case.
@@ -197,10 +194,10 @@ is used and there is not page that it's being loaded into: if this
 view is being referenced directly via the URL, the browser may show
 nothing:
 
-  >>> print http("""
+  >>> print(http(b"""
   ... GET /abcdefg/@@inline HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.0 200 Ok
   Content-Disposition: inline; filename="abcdefg"
   Content-Length: 9
@@ -210,17 +207,40 @@ nothing:
 
 
 The Default Display View
-------------------------
+========================
 
 This view is similar to the download and inline views, but no content
 disposition is specified at all.  This lets the browser's default
 handling of the data in the current context to be applied:
 
-  >>> print http("""
+  >>> print(http(b"""
   ... GET /abcdefg/@@display HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
-  ... """, handle_errors=False)
+  ... """, handle_errors=False))
   HTTP/1.0 200 Ok
+  Content-Length: 9
+  Content-Type: text/plain
+  <BLANKLINE>
+  some text
+
+Large Unicode Characters
+========================
+
+We need to be able to support Unicode characters in the filename
+greater than what Latin-1 (the encoding used by WSGI) can support.
+
+Let's rename a file to contain a high Unicode character and try to
+download it; the filename will be encoded:
+
+  >>> getRootFolder()["abcdefg"].__name__ = u'Big \U0001F4A9'
+  >>> transaction.commit()
+
+  >>> print(http(b"""
+  ... GET /abcdefg/@@download HTTP/1.1
+  ... Authorization: Basic mgr:mgrpw
+  ... """, handle_errors=False))
+  HTTP/1.0 200 Ok
+  Content-Disposition: attachment; filename="Big ð©"
   Content-Length: 9
   Content-Type: text/plain
   <BLANKLINE>

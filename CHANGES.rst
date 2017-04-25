@@ -2,14 +2,19 @@
 CHANGES
 =======
 
-0.6.3 (unreleased)
+1.0.0 (unreleased)
 ------------------
 
 - Remove unneeded test dependencies zope.app.server,
   zope.app.component, zope.app.container, and others.
+
 - Test on Travis CI. Only Python 2.7 is supported.
+
 - Update to work with zope.testbrowser 5.
+
 - Add PyPy support.
+
+- Add support for Python 3.4, 3.5 and 3.6.
 
 0.6.2 (2012-06-04)
 ------------------
