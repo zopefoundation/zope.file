@@ -2,7 +2,7 @@
  CHANGES
 =========
 
-1.0.0 (unreleased)
+1.0.0 (2017-04-25)
 ==================
 
 - Remove unneeded test dependencies zope.app.server,
