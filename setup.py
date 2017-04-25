@@ -89,7 +89,7 @@ setup(
             'zope.proxy >= 4.2.1',
             'zope.principalregistry',
             'zope.securitypolicy',
-            'zope.testbrowser > 5',
+            'zope.testbrowser >= 5.2',
             'zope.testrunner',
         ],
         browser=[

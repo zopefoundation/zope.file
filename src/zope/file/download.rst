@@ -1,6 +1,6 @@
-========================
-Downloading File Objects
-========================
+==========================
+ Downloading File Objects
+==========================
 
 The file content type provides a view used to download the file,
 regardless of the browser's default behavior for the content type.
@@ -26,7 +26,7 @@ download support:
   >>> transaction.commit()
 
 Headers
--------
+=======
 
 Now, let's get the headers for this file.  We use a utility function called
 ``getHeaders``:
@@ -95,7 +95,7 @@ an argument to ``getHeaders``:
    ('Content-Length', '0'),
    ('Content-Type', 'text/plain')]
 
-If the `contentDisposition` argument is not provided, none will be
+If the ``contentDisposition`` argument is not provided, none will be
 included in the headers:
 
   >>> headers = getHeaders(f)
@@ -105,7 +105,7 @@ included in the headers:
 
 
 Body
-----
+====
 
 We use DownloadResult to deliver the content to the browser.  Since
 there's no data in this file, there are no body chunks:
@@ -153,7 +153,7 @@ yield additional data:
 
 
 The Download View
------------------
+=================
 
 Now that we've seen the ``getHeaders`` function and the result object,
 let's take a look at the basic download view that uses them.  We'll need
@@ -185,7 +185,7 @@ result:
 
 
 The Inline View
----------------
+===============
 
 In addition, it is sometimes useful to view the data inline instead of
 downloading it.  A basic inline view is provided for this use case.
@@ -207,7 +207,7 @@ nothing:
 
 
 The Default Display View
-------------------------
+========================
 
 This view is similar to the download and inline views, but no content
 disposition is specified at all.  This lets the browser's default
@@ -218,6 +218,29 @@ handling of the data in the current context to be applied:
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False))
   HTTP/1.0 200 Ok
+  Content-Length: 9
+  Content-Type: text/plain
+  <BLANKLINE>
+  some text
+
+Large Unicode Characters
+========================
+
+We need to be able to support Unicode characters in the filename
+greater than what Latin-1 (the encoding used by WSGI) can support.
+
+Let's rename a file to contain a high Unicode character and try to
+download it; the filename will be encoded:
+
+  >>> getRootFolder()["abcdefg"].__name__ = u'Big \U0001F4A9'
+  >>> transaction.commit()
+
+  >>> print(http(b"""
+  ... GET /abcdefg/@@download HTTP/1.1
+  ... Authorization: Basic mgr:mgrpw
+  ... """, handle_errors=False))
+  HTTP/1.0 200 Ok
+  Content-Disposition: attachment; filename="Big ð©"
   Content-Length: 9
   Content-Type: text/plain
   <BLANKLINE>

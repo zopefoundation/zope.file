@@ -128,7 +128,7 @@
   <grant role="zope.Manager" principal="zope.mgr" />
 
   <class class="zope.site.folder.Folder">
-	<allow attributes="items __getitem__ get __contains__ __setitem__" />
+    <allow attributes="items __getitem__ get __contains__ __setitem__" />
   </class>
 
 </configure>

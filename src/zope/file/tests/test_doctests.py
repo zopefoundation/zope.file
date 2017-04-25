@@ -28,7 +28,7 @@ checker = renormalizing.RENormalizing([
     # Python 3 unicode removed the "u".
     (re.compile("u('.*?')"), r"\1"),
     (re.compile('u(".*?")'), r"\1"),
-    # Python 3 bytes removed the "b".
+    # Python 3 bytes added the "b".
     (re.compile("b('.*?')"), r"\1"),
     (re.compile('b(".*?")'), r"\1"),
 ])

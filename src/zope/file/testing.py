@@ -21,6 +21,7 @@ import doctest
 from six.moves import urllib_parse as urllib
 
 from zope.app.wsgi.testlayer import http
+from zope.app.wsgi.testlayer import FakeResponse
 from zope.browser.interfaces import IAdding
 from zope.browsermenu.menu import getFirstMenuItem
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
@@ -51,6 +52,26 @@ class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
 ZopeFileLayer = BrowserLayer(zope.file)
 
 
+class _FakeResponse(FakeResponse):
+    if str is bytes:
+        # py2 has a bug, assuming headers are in unicode already, or
+        # are decodable implicitly to ascii
+        def getHeaders(self):
+            headers = super(_FakeResponse, self).getHeaders()
+            result = []
+            for key, value in headers:
+                assert isinstance(key, str)
+                assert isinstance(value, str)
+                result.append((key.decode('latin-1'),
+                               value.decode('latin-1')))
+            return result
+
+        # we also need to ensure we get something that can be printed
+        # in ascii and produce the same output as Py3.
+        def __str__(self):
+            return self.getOutput().decode('latin-1').encode("utf-8")
+
+
 def FunctionalBlobDocFileSuite(*paths, **kw):
     globs = kw.setdefault('globs', {})
     globs['getRootFolder'] = ZopeFileLayer.getRootFolder
@@ -62,7 +83,9 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
         def _http(query_str, *args, **kwargs):
             # Strip leading \n
             query_str = query_str.lstrip()
-            return http(wsgi_app, query_str, *args, **kwargs)
+            response = http(wsgi_app, query_str, *args, **kwargs)
+            response.__class__ = _FakeResponse
+            return response
 
         test.globs['http'] = _http
         kwsetUp(test)
@@ -137,6 +160,7 @@ class Contents(BrowserView):
         info['url'] = urllib.quote(oid.encode('utf-8'))
         return info
 
+
 @implementer(IBrowserPublisher)
 class ManagementViewSelector(BrowserView):
     """View that selects the first available management view.
@@ -145,20 +169,18 @@ class ManagementViewSelector(BrowserView):
     '../view_on_parent.html' or '++rollover++'.
     """
     # Copied from zope.app.publication
+    # Simplified to assert just the test case we expect.
 
     def browserDefault(self, request):
         return self, ()
 
     def __call__(self):
         item = getFirstMenuItem('zmi_views', self.context, self.request)
-
-        if item:
-            redirect_url = item['action']
-            if not (redirect_url.startswith('../') or \
-                    redirect_url.lower().startswith('javascript:') or \
-                    redirect_url.lower().startswith('++')):
-                self.request.response.redirect(redirect_url)
-                return u''
+        assert item
+        redirect_url = item['action']
+        if not redirect_url.lower().startswith(('../', 'javascript:', '++')):
+            self.request.response.redirect(redirect_url)
+            return u''
 
         # The zope.app.publication version would redirect to /
         # with self.request.response.redirect('.) and return u''.

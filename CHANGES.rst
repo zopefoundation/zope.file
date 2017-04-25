@@ -14,7 +14,7 @@ CHANGES
 
 - Add PyPy support.
 
-- Add support for Python 3.5 and 3.6.
+- Add support for Python 3.4, 3.5 and 3.6.
 
 0.6.2 (2012-06-04)
 ------------------
