@@ -1,9 +1,9 @@
-=====================
-Presentation Adapters
-=====================
+=======================
+ Presentation Adapters
+=======================
 
 Object size
------------
+===========
 
 The size of the file as presented in the contents view of a container is
 provided using an adapter implementing the `zope.size.interfaces.ISized`

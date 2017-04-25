@@ -1,6 +1,6 @@
-====================
-Uploading a new file
-====================
+======================
+ Uploading a new file
+======================
 
 There's a simple view for uploading a new file.  Let's try it:
 

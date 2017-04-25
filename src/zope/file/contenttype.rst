@@ -1,6 +1,6 @@
-==================================
-Content type and encoding controls
-==================================
+====================================
+ Content type and encoding controls
+====================================
 
 Files provide a view that supports controlling the MIME content type
 and, where applicable, the content encoding.  Content encoding is

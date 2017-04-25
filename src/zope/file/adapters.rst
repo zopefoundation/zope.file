@@ -1,6 +1,6 @@
-========
-Adapters
-========
+==========
+ Adapters
+==========
 
 The `zope.file` package provides some adapters to adapt file-like
 objects to `zope.filerepresentation` conform objects. There is a
