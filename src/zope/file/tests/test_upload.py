@@ -5,8 +5,6 @@ import unittest
 from zope import component
 from zope.interface import implementer
 
-from zope.file import upload
-
 from zope.mimetype.interfaces import IContentTypeEncoded
 from zope.mimetype.interfaces import ICharsetCodec
 from zope.mimetype.interfaces import ICodecPreferredCharset
@@ -15,6 +13,8 @@ from zope.mimetype.interfaces import IMimeTypeGetter
 from zope.mimetype.typegetter import smartMimeTypeGuesser
 
 from io import BytesIO
+
+from zope.file.tests import skipWithoutZopeFormlib
 
 @implementer(IContentTypeEncoded)
 class MockContext(object):
@@ -30,11 +30,11 @@ class MockContext(object):
     def close(self):
         pass
 
-
+@skipWithoutZopeFormlib
 class TestFunctions(unittest.TestCase):
 
     def test_name_finder_with_no_filename(self):
-
+        from zope.file import upload
         class MockFile(object):
             pass
 
@@ -42,6 +42,7 @@ class TestFunctions(unittest.TestCase):
 
         self.assertIsNone(res)
 
+@skipWithoutZopeFormlib
 class TestUpdateBlob(unittest.TestCase):
 
     def setUp(self):
@@ -57,13 +58,16 @@ class TestUpdateBlob(unittest.TestCase):
         super(TestUpdateBlob, self).tearDown()
 
     def test_no_mime_type(self):
+        from zope.file import upload
         upload.updateBlob(self.context, self.data)
         self.assertEqual(self.context.mimeType, 'application/octet-stream')
         self.assertEqual(self.context.parameters, {})
 
+@skipWithoutZopeFormlib
 class TestReupload(unittest.TestCase):
 
     def test_different_codec(self):
+        from zope.file import upload
 
         class MockCodec(object):
             name = 'TestContentTypeForm'

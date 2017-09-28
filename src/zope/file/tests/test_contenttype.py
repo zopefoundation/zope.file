@@ -5,16 +5,17 @@ import unittest
 from zope import component
 from zope.interface import implementer
 
-from zope.file.contenttype import validateCodecUse
-from zope.file.contenttype import ContentTypeForm
-
 from zope.mimetype.interfaces import IContentTypeEncoded
 from zope.mimetype.interfaces import ICodecPreferredCharset
 
+from zope.file.tests import skipWithoutZopeFormlib
+
+@skipWithoutZopeFormlib
 class TestCodec(unittest.TestCase):
 
     def test_unicode_error_too_short(self):
-
+        from zope.file.contenttype import ContentTypeForm
+        from zope.file.contenttype import validateCodecUse
         class MockFile(object):
             def open(self, _mode):
                 return self
@@ -40,9 +41,11 @@ class TestCodec(unittest.TestCase):
         self.assertEqual("Selected encoding cannot decode document.",
                          errs[0].errors)
 
+@skipWithoutZopeFormlib
 class TestContentTypeForm(unittest.TestCase):
 
     def test_del_charset_no_encoding(self):
+        from zope.file.contenttype import ContentTypeForm
         @implementer(IContentTypeEncoded)
         class MockContext(object):
             def __init__(self):
@@ -61,6 +64,7 @@ class TestContentTypeForm(unittest.TestCase):
         self.assertNotIn('charset', context.parameters)
 
     def test_charset_with_encoding(self):
+        from zope.file.contenttype import ContentTypeForm
         @implementer(IContentTypeEncoded)
         class MockContext(object):
             def __init__(self):

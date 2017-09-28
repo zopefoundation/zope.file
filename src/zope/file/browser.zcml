@@ -2,8 +2,11 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:zcml="http://namespaces.zope.org/zcml"
+	zcml:condition="installed zope.browserpage"
     i18n_domain="zope.file"
     >
+
+  <include package="zope.browserpage" file="meta.zcml" />
 
   <browser:view
       for=".interfaces.IFile"
