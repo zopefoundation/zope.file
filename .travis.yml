@@ -18,7 +18,7 @@ install:
     - pip install -U coverage coveralls zope.testing zope.testrunner
     - pip install -U -e .[$DEP]
 script:
-    - coverage run -m zope.testrunner --test-path=src
+    - coverage run -m zope.testrunner --auto-color --test-path=src
 after_success:
     - coveralls
 notifications:
