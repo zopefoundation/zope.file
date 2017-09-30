@@ -2,7 +2,7 @@
  CHANGES
 =========
 
-1.1.0 (unreleased)
+1.1.0 (2017-09-30)
 ==================
 
 - Move more browser dependencies to the ``browser`` extra.
