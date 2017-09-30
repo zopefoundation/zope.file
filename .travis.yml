@@ -1,26 +1,26 @@
 language: python
 sudo: false
 python:
-  - 2.7
-  - 3.4
-  - 3.5
-  - 3.6
-  - pypy-5.4.1
-script:
-  - coverage run -m zope.testrunner --test-path=src  --auto-color --auto-progress
-
-after_success:
-  - coveralls
-notifications:
-  email: false
-
+    - 2.7
+    - 3.4
+    - 3.5
+    - 3.6
+    - pypy
+    - pypy3
+env:
+    - DEP=test
+matrix:
+  include:
+    - python: 2.7
+      env: DEP=no_such_extra
 install:
-  - pip install -U pip setuptools
-  - pip install -U coveralls coverage
-  - pip install -U -e ".[test]"
-
-
+    - pip install -U pip setuptools
+    - pip install -U coverage coveralls zope.testing zope.testrunner
+    - pip install -U -e .[$DEP]
+script:
+    - coverage run -m zope.testrunner --auto-color --test-path=src
+after_success:
+    - coveralls
+notifications:
+    email: false
 cache: pip
-
-before_cache:
-    - rm -f $HOME/.cache/pip/log/debug.log

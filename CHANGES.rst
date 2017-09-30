@@ -2,10 +2,12 @@
  CHANGES
 =========
 
-1.0.1 (unreleased)
+1.1.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Move more browser dependencies to the ``browser`` extra.
+
+- Begin testing PyPy3 on Travis CI.
 
 
 1.0.0 (2017-04-25)

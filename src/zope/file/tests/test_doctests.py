@@ -18,11 +18,11 @@
 __docformat__ = "reStructuredText"
 import doctest
 import unittest
-
-from zope.file import testing
-
-from zope.testing import renormalizing
 import re
+
+import zope.file
+from zope.component.testlayer import ZCMLFileLayer
+from zope.testing import renormalizing
 
 checker = renormalizing.RENormalizing([
     # Python 3 unicode removed the "u".
@@ -34,15 +34,31 @@ checker = renormalizing.RENormalizing([
 ])
 
 
+ZopeFileLayer = ZCMLFileLayer(zope.file, 'configure.zcml')
+
 def fromDocFile(path, **kwargs):
-    suite = testing.FunctionalBlobDocFileSuite(path, **kwargs)
+    try:
+        from zope.file import testing
+    except ImportError:
+        def setUp(test):
+            raise unittest.SkipTest("Unable to import zope.file.testing")
+        suite = doctest.DocFileSuite(path, setUp=setUp, **kwargs)
+    else:
+        suite = testing.FunctionalBlobDocFileSuite(path, **kwargs)
+    return suite
+
+
+
+def fromSimpleDocFile(path, **kwargs):
+    suite = doctest.DocFileSuite(path, checker=checker)
+    suite.layer = ZopeFileLayer
     return suite
 
 def test_suite():
     return unittest.TestSuite((
         doctest.DocFileSuite("../README.rst", checker=checker),
         doctest.DocFileSuite("../browser.rst", checker=checker),
-        fromDocFile("../adapters.rst", checker=checker),
+        fromSimpleDocFile("../adapters.rst", checker=checker),
         fromDocFile('../contenttype.rst', checker=checker),
         fromDocFile("../download.rst", checker=checker),
         fromDocFile("../upload.rst", checker=checker),

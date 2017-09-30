@@ -23,6 +23,34 @@ def read(*rnames):
 
 version = '1.0.1.dev0'
 
+BROWSER_REQUIRES = [
+    'zope.browser',
+    'zope.browserresource',
+    'zope.publisher >= 4.3.1',
+    'zope.formlib',
+]
+
+TESTS_REQUIRE = BROWSER_REQUIRES + [
+    'zope.app.basicskin >= 4.0.0',
+    'zope.app.http',
+    'zope.app.pagetemplate >= 4.0.0',
+    'zope.app.principalannotation',
+    'zope.app.publication',
+    'zope.app.wsgi',
+
+    'zope.applicationcontrol',
+    'zope.copypastemove',
+    'zope.browser',
+    'zope.browsermenu',
+    'zope.login',
+    'zope.password',
+    'zope.proxy >= 4.2.1',
+    'zope.principalregistry',
+    'zope.securitypolicy',
+    'zope.testbrowser >= 5.2',
+    'zope.testrunner',
+]
+
 setup(
     name='zope.file',
     version=version,
@@ -66,51 +94,29 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Framework :: Zope3',
     ],
-    url='http://cheeseshop.python.org/pypi/zope.file',
+    url='https://github.com/zopefoundation/zope.file',
     license='ZPL 2.1',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['zope'],
-    extras_require=dict(
-        test=[
-            'zope.app.basicskin >= 4.0.0',
-            'zope.app.http',
-            'zope.app.pagetemplate >= 4.0.0',
-            'zope.app.principalannotation',
-            'zope.app.publication',
-            'zope.app.wsgi',
-
-            'zope.applicationcontrol',
-            'zope.copypastemove',
-            'zope.browser',
-            'zope.browsermenu',
-            'zope.login',
-            'zope.password',
-            'zope.proxy >= 4.2.1',
-            'zope.principalregistry',
-            'zope.securitypolicy',
-            'zope.testbrowser >= 5.2',
-            'zope.testrunner',
-        ],
-        browser=[
-            'zope.browser',
-        ]
-    ),
+    extras_require={
+        'test': TESTS_REQUIRE,
+        'browser': BROWSER_REQUIRES,
+    },
     install_requires=[
         'setuptools',
         'ZODB',
+        'zope.annotation',
         'zope.component',
         'zope.container',
         'zope.contenttype',
         'zope.event',
         'zope.filerepresentation',
-        'zope.formlib',
         'zope.i18nmessageid',
         'zope.lifecycleevent',
         'zope.interface',
         'zope.location',
-        'zope.mimetype >= 2.2',
-        'zope.publisher >= 4.3.1',
+        'zope.mimetype >= 2.3.0',
         'zope.schema',
         'zope.security >= 4.1.0',
         'zope.size',
