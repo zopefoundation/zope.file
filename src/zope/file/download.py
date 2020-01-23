@@ -99,7 +99,7 @@ def bodyIterator(f):
         while True:
             chunk = f.read(CHUNK_SIZE)
             if not chunk:
-                raise StopIteration()
+                return
             yield chunk
     finally:
         f.close()

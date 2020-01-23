@@ -5,7 +5,7 @@
 1.1.1 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add support for Python 3.7 and 3.8
 
 
 1.1.0 (2017-09-30)
