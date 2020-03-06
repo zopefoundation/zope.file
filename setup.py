@@ -21,7 +21,7 @@ def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
 
-version = '1.2.0'
+version = '1.2.1.dev0'
 
 BROWSER_REQUIRES = [
     'zope.browser',
