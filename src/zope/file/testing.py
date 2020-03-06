@@ -34,8 +34,6 @@ from zope.interface import implementer
 from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserPublisher
 
-from zope.security.proxy import removeSecurityProxy
-
 from zope.traversing.browser.absoluteurl import absoluteURL
 
 import zope.app.wsgi.testlayer
@@ -49,7 +47,7 @@ class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
     pass
 
 
-ZopeFileLayer = BrowserLayer(zope.file)
+ZopeFileLayer = BrowserLayer(zope.file, allowTearDown=True)
 
 
 class _FakeResponse(FakeResponse):
