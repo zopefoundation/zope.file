@@ -1,5 +1,11 @@
 [run]
-source = src
+source = zope.file
+
+[paths]
+source =
+    src/
+    .tox/*/lib/python*/site-packages/
+    .tox/pypy*/site-packages/
 
 [report]
 exclude_lines =
