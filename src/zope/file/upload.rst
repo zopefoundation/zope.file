@@ -28,7 +28,7 @@ result:
   ... GET /plain.txt/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False))
-  HTTP/1.0 200 Ok
+  HTTP/1.1 200 Ok
   Content-Disposition: attachment; filename="plain.txt"
   Content-Length: 9
   Content-Type: text/plain;charset=utf-8
@@ -60,7 +60,7 @@ result:
   ... GET /plain.txt/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False))
-  HTTP/1.0 200 Ok
+  HTTP/1.1 200 Ok
   Content-Disposition: attachment; filename="plain.txt"
   Content-Length: 8
   Content-Type: text/plain;charset=utf-8
@@ -89,7 +89,7 @@ the result:
   ... GET /simple.html/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False))
-  HTTP/1.0 200 Ok
+  HTTP/1.1 200 Ok
   Content-Disposition: attachment; filename="simple.html"
   Content-Length: 56
   Content-Type: application/xhtml+xml;charset=utf-8
@@ -120,7 +120,7 @@ the result:
   ... GET /naughty%20name.html/@@download HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False))
-  HTTP/1.0 200 Ok
+  HTTP/1.1 200 Ok
   Content-Disposition: attachment; filename="naughty name.html"
   Content-Length: 56
   Content-Type: application/xhtml+xml;charset=utf-8
