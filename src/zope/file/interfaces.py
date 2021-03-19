@@ -54,7 +54,7 @@ class IFile(zope.mimetype.interfaces.IContentTypeAware):
         description=_("Size in bytes"),
         readonly=True,
         required=True,
-        )
+    )
 
 
 # The remaining interfaces below serve only to document the kind of APIs
@@ -75,7 +75,7 @@ class IFileAccessor(zope.interface.Interface):
         title=_("Open mode passed to the corresponding file's open() method,"
                 " or the default value if not passed."),
         required=True,
-        )
+    )
 
 
 class IFileReader(IFileAccessor):

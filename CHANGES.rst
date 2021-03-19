@@ -5,13 +5,13 @@
 1.2.1 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add support for Python 3.9.
 
 
 1.2.0 (2020-03-06)
 ==================
 
-- Add support for Python 3.7 and 3.8
+- Add support for Python 3.7 and 3.8.
 
 - Drop Python 3.4 support.
 

@@ -16,6 +16,7 @@ from io import BytesIO
 
 from zope.file.tests import skipWithoutZopeFormlib
 
+
 @implementer(IContentTypeEncoded)
 class MockContext(object):
     def __init__(self):
@@ -30,17 +31,20 @@ class MockContext(object):
     def close(self):
         pass
 
+
 @skipWithoutZopeFormlib
 class TestFunctions(unittest.TestCase):
 
     def test_name_finder_with_no_filename(self):
         from zope.file import upload
+
         class MockFile(object):
             pass
 
         res = upload.nameFinder(MockFile())
 
         self.assertIsNone(res)
+
 
 @skipWithoutZopeFormlib
 class TestUpdateBlob(unittest.TestCase):
@@ -63,6 +67,7 @@ class TestUpdateBlob(unittest.TestCase):
         self.assertEqual(self.context.mimeType, 'application/octet-stream')
         self.assertEqual(self.context.parameters, {})
 
+
 @skipWithoutZopeFormlib
 class TestReupload(unittest.TestCase):
 
@@ -84,7 +89,8 @@ class TestReupload(unittest.TestCase):
 
         sio = BytesIO()
         request.form = {'form.data': sio}
-        sio.headers = {'Content-Type': 'text/plain; charset=TestContentTypeForm'}
+        sio.headers = {
+            'Content-Type': 'text/plain; charset=TestContentTypeForm'}
 
         form.have_encoded = True
         data = {}
@@ -109,6 +115,7 @@ class TestReupload(unittest.TestCase):
                                   ICodecPreferredCharset, codec.name.lower())
             gsm.unregisterUtility(orig_codec, ICharsetCodec, orig_codec_name)
             gsm.unregisterUtility(smartMimeTypeGuesser, IMimeTypeGetter)
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
