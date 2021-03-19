@@ -1,0 +1,29 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/pure-python
+[meta]
+template = "pure-python"
+commit-id = "5ff06aa9d4d474924437add182099207b5b7f5f7"
+
+[python]
+with-appveyor = false
+with-pypy = true
+with-legacy-python = true
+with-docs = false
+with-sphinx-doctests = false
+
+[tox]
+use-flake8 = true
+additional-envlist = [
+    "minimal",
+    ]
+testenv-additional = [
+    "",
+    "[testenv:minimal]",
+    "extras =",
+    "deps =",
+    "    zope.testrunner",
+    "    zope.testing",
+    ]
+
+[coverage]
+fail-under = 95
