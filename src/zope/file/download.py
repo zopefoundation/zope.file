@@ -21,6 +21,7 @@ import zope.publisher.browser
 import zope.publisher.interfaces.http
 import zope.security.proxy
 
+
 class Download(zope.publisher.browser.BrowserView):
 
     def __call__(self):
@@ -44,40 +45,41 @@ class Display(zope.publisher.browser.BrowserView):
             self.request.response.setHeader(k, v)
         return DownloadResult(self.context)
 
+
 def getHeaders(context, contentType=None, downloadName=None,
                contentDisposition=None, contentLength=None):
-        if not contentType:
-            cti = zope.mimetype.interfaces.IContentInfo(context, None)
-            if cti is not None:
-                contentType = cti.contentType
-        contentType = contentType or "application/octet-stream"
-        headers = ("Content-Type", contentType),
+    if not contentType:
+        cti = zope.mimetype.interfaces.IContentInfo(context, None)
+        if cti is not None:
+            contentType = cti.contentType
+    contentType = contentType or "application/octet-stream"
+    headers = ("Content-Type", contentType),
 
-        downloadName = downloadName or context.__name__
-        if contentDisposition:
-            if downloadName:
-                # Headers must be native strings. Under Py2, we probably
-                # need to encode the name
-                if str is bytes:
-                    if not isinstance(downloadName, bytes):
-                        downloadName = downloadName.encode("utf-8")
-                else:
-                    # Under Python 3, we need to pass the native string,
-                    # but characters greater than 256 will fail to be encoded
-                    # by the WSGI server, which should be using latin-1. The solution
-                    # is to smuggle them through using double encoding, allowing the
-                    # final recipient to decode its string using utf-8
-                    downloadName = downloadName.encode('utf-8').decode('latin-1')
+    downloadName = downloadName or context.__name__
+    if contentDisposition:
+        if downloadName:
+            # Headers must be native strings. Under Py2, we probably
+            # need to encode the name
+            if str is bytes:
+                if not isinstance(downloadName, bytes):
+                    downloadName = downloadName.encode("utf-8")
+            else:
+                # Under Python 3, we need to pass the native string,
+                # but characters greater than 256 will fail to be encoded
+                # by the WSGI server, which should be using latin-1. The
+                # solution is to smuggle them through using double encoding,
+                # allowing the final recipient to decode its string using utf-8
+                downloadName = downloadName.encode('utf-8').decode('latin-1')
 
-                contentDisposition += (
-                    '; filename="%s"' % downloadName
-                    )
-            headers += ("Content-Disposition", contentDisposition),
+            contentDisposition += (
+                '; filename="%s"' % downloadName
+            )
+        headers += ("Content-Disposition", contentDisposition),
 
-        if contentLength is None:
-            contentLength = context.size
-        headers += ("Content-Length", str(contentLength)),
-        return headers
+    if contentLength is None:
+        contentLength = context.size
+    headers += ("Content-Length", str(contentLength)),
+    return headers
 
 
 @zope.interface.implementer(zope.publisher.interfaces.http.IResult)
@@ -90,6 +92,7 @@ class DownloadResult(object):
 
     def __iter__(self):
         return self._iter
+
 
 CHUNK_SIZE = 64 * 1024
 

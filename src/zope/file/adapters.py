@@ -14,6 +14,7 @@ from zope import interface, component
 import zope.filerepresentation.interfaces
 from zope.file import interfaces
 
+
 @component.adapter(interfaces.IFile)
 @interface.implementer(zope.filerepresentation.interfaces.IReadFile)
 class ReadFileAdapter(object):
@@ -27,6 +28,7 @@ class ReadFileAdapter(object):
     def read(self):
         with self.context.open() as f:
             return f.read()
+
 
 @component.adapter(interfaces.IFile)
 @interface.implementer(zope.filerepresentation.interfaces.IWriteFile)

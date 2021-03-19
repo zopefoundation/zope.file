@@ -91,7 +91,7 @@ class ContentTypeForm(zope.formlib.form.Form):
             title=_("Content type"),
             description=_("Type of document"),
             source=contentTypeSource,
-            ))
+        ))
 
     encoding_field = zope.formlib.form.Field(
         zope.schema.Choice(
@@ -100,7 +100,7 @@ class ContentTypeForm(zope.formlib.form.Form):
             description=_("Character data encoding"),
             source=codecSource,
             required=False,
-            ))
+        ))
 
     def get_rendered_encoding(self):
         charset = self.context.parameters.get("charset")

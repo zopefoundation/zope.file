@@ -76,8 +76,10 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
     kw['package'] = doctest._normalize_module(kw.get('package'))
 
     kwsetUp = kw.get('setUp', lambda x: None)
+
     def setUp(test):
         wsgi_app = ZopeFileLayer.make_wsgi_app()
+
         def _http(query_str, *args, **kwargs):
             # Strip leading \n
             query_str = query_str.lstrip()
@@ -107,7 +109,7 @@ class Adding(BrowserView):
     # set in BrowserView.__init__
     request = None
     context = None
-    contentName = None # usually set by Adding traverser
+    contentName = None  # usually set by Adding traverser
 
     def add(self, content):
         container = self.context
@@ -121,7 +123,7 @@ class Adding(BrowserView):
         chooser.checkName(name, content)
 
         container[name] = content
-        self.contentName = name # Set the added object Name
+        self.contentName = name  # Set the added object Name
         return container[name]
 
     def nextURL(self):
@@ -183,4 +185,4 @@ class ManagementViewSelector(BrowserView):
         # The zope.app.publication version would redirect to /
         # with self.request.response.redirect('.) and return u''.
         # But our tests never get here.
-        raise AssertionError("We shouldn't get here") # pragma: no cover
+        raise AssertionError("We shouldn't get here")  # pragma: no cover

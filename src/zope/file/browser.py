@@ -22,6 +22,7 @@ import zope.size
 import zope.size.interfaces
 import zope.file.interfaces
 
+
 @interface.implementer(zope.size.interfaces.ISized)
 @component.adapter(zope.file.interfaces.IFile)
 class Sized(object):

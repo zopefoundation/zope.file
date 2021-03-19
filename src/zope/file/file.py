@@ -24,6 +24,7 @@ import zope.interface
 
 from ZODB.blob import Blob
 
+
 @zope.interface.implementer(
     zope.file.interfaces.IFile,
     zope.location.interfaces.ILocation)
@@ -59,13 +60,13 @@ class File(persistent.Persistent):
 
     @property
     def size(self):
-        if self._data == b"": # pragma: no cover
+        if self._data == b"":  # pragma: no cover
             # It shouldn't be possible to get here; perhaps this is
             # compatibility code for old objects in existing databases?
             return 0
 
         with closing(self.open()) as reader:
-            reader.seek(0,2)
+            reader.seek(0, 2)
             size = int(reader.tell())
 
         return size

@@ -44,11 +44,12 @@ from zope.lifecycleevent import ObjectModifiedEvent
 
 _nameFinder = re.compile(r'(.*[\\/:])?(.+)')
 
+
 def nameFinder(fileob):
     name = getattr(fileob, 'filename', None)
     if name is None:
         return None
-    match  = _nameFinder.match(name)
+    match = _nameFinder.match(name)
     if match is not None:
         match = match.group(2)
     return match
@@ -61,8 +62,8 @@ class Upload(zope.formlib.form.AddForm):
             __name__="data",
             title=_("Upload data"),
             description=_("Upload file"),
-            ),
-        )
+        ),
+    )
 
     def create(self, data):
         ob = self._create_instance(data)
@@ -101,8 +102,8 @@ class Reupload(zope.formlib.form.Form):
             __name__="data",
             title=_("Upload data"),
             description=_("Upload file to replace the current data"),
-            ),
-        )
+        ),
+    )
 
     @zope.formlib.form.action(_("Edit"))
     def upload(self, action, data):

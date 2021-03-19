@@ -36,6 +36,7 @@ checker = renormalizing.RENormalizing([
 
 ZopeFileLayer = ZCMLFileLayer(zope.file, 'configure.zcml')
 
+
 def fromDocFile(path, **kwargs):
     try:
         from zope.file import testing
@@ -48,11 +49,11 @@ def fromDocFile(path, **kwargs):
     return suite
 
 
-
 def fromSimpleDocFile(path, **kwargs):
     suite = doctest.DocFileSuite(path, checker=checker)
     suite.layer = ZopeFileLayer
     return suite
+
 
 def test_suite():
     return unittest.TestSuite((
@@ -62,4 +63,4 @@ def test_suite():
         fromDocFile('../contenttype.rst', checker=checker),
         fromDocFile("../download.rst", checker=checker),
         fromDocFile("../upload.rst", checker=checker),
-        ))
+    ))
