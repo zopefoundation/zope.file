@@ -20,26 +20,22 @@ import doctest
 
 from six.moves import urllib_parse as urllib
 
-from zope.app.wsgi.testlayer import http
+import zope.app.wsgi.testlayer
+import zope.security.checker
+import zope.testbrowser.wsgi
 from zope.app.wsgi.testlayer import FakeResponse
+from zope.app.wsgi.testlayer import http
 from zope.browser.interfaces import IAdding
 from zope.browsermenu.menu import getFirstMenuItem
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
-
 from zope.container.interfaces import IContainerNamesContainer
 from zope.container.interfaces import INameChooser
-
 from zope.interface import implementer
-
 from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserPublisher
-
 from zope.traversing.browser.absoluteurl import absoluteURL
 
-import zope.app.wsgi.testlayer
 import zope.file
-import zope.security.checker
-import zope.testbrowser.wsgi
 
 
 class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,

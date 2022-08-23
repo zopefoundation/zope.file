@@ -15,7 +15,9 @@
 
 """
 import os
-from setuptools import setup, find_packages
+
+from setuptools import find_packages
+from setuptools import setup
 
 
 def read(*rnames):
@@ -39,17 +41,17 @@ TESTS_REQUIRE = BROWSER_REQUIRES + [
     'zope.app.principalannotation',
     'zope.app.publication',
     'zope.app.wsgi',
-
     'zope.applicationcontrol',
-    'zope.copypastemove',
     'zope.browser',
     'zope.browsermenu',
+    'zope.copypastemove',
     'zope.login',
     'zope.password',
-    'zope.proxy >= 4.2.1',
     'zope.principalregistry',
+    'zope.proxy >= 4.2.1',
     'zope.securitypolicy',
     'zope.testbrowser >= 5.2',
+    'zope.testing',
     'zope.testrunner',
 ]
 
@@ -91,6 +93,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Natural Language :: English',

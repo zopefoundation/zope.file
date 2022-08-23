@@ -16,13 +16,13 @@
 
 
 from contextlib import closing
+
 import persistent
-
-import zope.location.interfaces
-import zope.file.interfaces
 import zope.interface
-
+import zope.location.interfaces
 from ZODB.blob import Blob
+
+import zope.file.interfaces
 
 
 @zope.interface.implementer(

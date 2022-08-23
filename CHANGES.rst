@@ -5,7 +5,7 @@
 1.2.1 (unreleased)
 ==================
 
-- Add support for Python 3.9.
+- Add support for Python 3.9, 3.10.
 
 
 1.2.0 (2020-03-06)

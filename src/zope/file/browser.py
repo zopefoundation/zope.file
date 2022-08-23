@@ -15,12 +15,12 @@
 """
 __docformat__ = "reStructuredText"
 
-from zope import interface
-from zope import component
-
 import zope.size
 import zope.size.interfaces
+
 import zope.file.interfaces
+from zope import component
+from zope import interface
 
 
 @interface.implementer(zope.size.interfaces.ISized)

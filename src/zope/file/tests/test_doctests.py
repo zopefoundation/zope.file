@@ -17,12 +17,14 @@
 
 __docformat__ = "reStructuredText"
 import doctest
-import unittest
 import re
+import unittest
 
-import zope.file
 from zope.component.testlayer import ZCMLFileLayer
 from zope.testing import renormalizing
+
+import zope.file
+
 
 checker = renormalizing.RENormalizing([
     # Python 3 unicode removed the "u".
