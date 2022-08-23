@@ -25,9 +25,9 @@ whose size we can get:
 Writing to this read-only file is impossible, as the interface does
 not require it:
 
-   >>> r.write(b"some more content")
+   >>> r.write(b"some more content")  # doctest: +ELLIPSIS
    Traceback (most recent call last):
-   AttributeError: 'ReadFileAdapter' object has no attribute 'write'
+   AttributeError: 'ReadFileAdapter' object has no attribute 'write'...
 
 With a write-file the opposite happens. We can write but not read:
 
