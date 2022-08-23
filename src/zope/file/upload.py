@@ -18,29 +18,25 @@ __docformat__ = "reStructuredText"
 
 import re
 
-import zope.contenttype.parse
 import zope.component
+import zope.contenttype.parse
 import zope.event
-import zope.file.file
 import zope.formlib.form
-
 import zope.schema
+from zope.container.interfaces import INameChooser
+from zope.lifecycleevent import ObjectModifiedEvent
+from zope.mimetype.event import changeContentType
+from zope.mimetype.interfaces import ICharsetCodec
+from zope.mimetype.interfaces import ICodecPreferredCharset
+from zope.mimetype.interfaces import IContentInfo
+from zope.mimetype.interfaces import IContentTypeEncoded
+from zope.mimetype.interfaces import IContentTypeInterface
+from zope.mimetype.interfaces import IMimeTypeGetter
+from zope.security.proxy import removeSecurityProxy
 
+import zope.file.file
 from zope.file.i18n import _
 
-from zope.container.interfaces import INameChooser
-
-from zope.mimetype.interfaces import IContentInfo
-from zope.mimetype.interfaces import ICodecPreferredCharset
-from zope.mimetype.interfaces import ICharsetCodec
-from zope.mimetype.interfaces import IContentTypeInterface
-from zope.mimetype.interfaces import IContentTypeEncoded
-from zope.mimetype.interfaces import IMimeTypeGetter
-
-from zope.mimetype.event import changeContentType
-
-from zope.security.proxy import removeSecurityProxy
-from zope.lifecycleevent import ObjectModifiedEvent
 
 _nameFinder = re.compile(r'(.*[\\/:])?(.+)')
 

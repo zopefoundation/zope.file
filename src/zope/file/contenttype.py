@@ -24,22 +24,17 @@ import zope.formlib.form
 import zope.formlib.interfaces
 import zope.interface
 import zope.schema
-
-from zope.mimetype.interfaces import IContentTypeEncoded
-from zope.mimetype.interfaces import IContentTypeInterface
+from zope.lifecycleevent import ObjectModifiedEvent
+from zope.mimetype.event import changeContentType
 from zope.mimetype.interfaces import ICharsetCodec
 from zope.mimetype.interfaces import ICodecPreferredCharset
-
-from zope.mimetype.event import changeContentType
-
-from zope.mimetype.source import contentTypeSource
+from zope.mimetype.interfaces import IContentTypeEncoded
+from zope.mimetype.interfaces import IContentTypeInterface
 from zope.mimetype.source import codecSource
-
-from zope.file.i18n import _
-
+from zope.mimetype.source import contentTypeSource
 from zope.security.proxy import removeSecurityProxy
 
-from zope.lifecycleevent import ObjectModifiedEvent
+from zope.file.i18n import _
 
 
 def validateCodecUse(file, iface, codec, codec_field):

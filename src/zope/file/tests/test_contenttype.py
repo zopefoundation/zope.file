@@ -2,12 +2,11 @@
 
 import unittest
 
-from zope import component
 from zope.interface import implementer
-
-from zope.mimetype.interfaces import IContentTypeEncoded
 from zope.mimetype.interfaces import ICodecPreferredCharset
+from zope.mimetype.interfaces import IContentTypeEncoded
 
+from zope import component
 from zope.file.tests import skipWithoutZopeFormlib
 
 

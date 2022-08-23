@@ -1,19 +1,16 @@
 
 
 import unittest
-
-from zope import component
-from zope.interface import implementer
-
-from zope.mimetype.interfaces import IContentTypeEncoded
-from zope.mimetype.interfaces import ICharsetCodec
-from zope.mimetype.interfaces import ICodecPreferredCharset
-from zope.mimetype.interfaces import IMimeTypeGetter
-
-from zope.mimetype.typegetter import smartMimeTypeGuesser
-
 from io import BytesIO
 
+from zope.interface import implementer
+from zope.mimetype.interfaces import ICharsetCodec
+from zope.mimetype.interfaces import ICodecPreferredCharset
+from zope.mimetype.interfaces import IContentTypeEncoded
+from zope.mimetype.interfaces import IMimeTypeGetter
+from zope.mimetype.typegetter import smartMimeTypeGuesser
+
+from zope import component
 from zope.file.tests import skipWithoutZopeFormlib
 
 

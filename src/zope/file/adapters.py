@@ -10,8 +10,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from zope import interface, component
 import zope.filerepresentation.interfaces
+
+from zope import component
+from zope import interface
 from zope.file import interfaces
 
 
