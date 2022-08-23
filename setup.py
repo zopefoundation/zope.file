@@ -50,6 +50,7 @@ TESTS_REQUIRE = BROWSER_REQUIRES + [
     'zope.principalregistry',
     'zope.securitypolicy',
     'zope.testbrowser >= 5.2',
+    'zope.testing',
     'zope.testrunner',
 ]
 
