@@ -1,5 +1,3 @@
-
-
 import unittest
 
 from zope.interface import implementer
@@ -17,7 +15,7 @@ class TestCodec(unittest.TestCase):
         from zope.file.contenttype import ContentTypeForm
         from zope.file.contenttype import validateCodecUse
 
-        class MockFile(object):
+        class MockFile:
             def open(self, _mode):
                 return self
 
@@ -27,7 +25,7 @@ class TestCodec(unittest.TestCase):
             def close(self):
                 pass
 
-        class MockCodec(object):
+        class MockCodec:
             def decode(self, data):
                 return '', 0
 
@@ -49,7 +47,7 @@ class TestContentTypeForm(unittest.TestCase):
         from zope.file.contenttype import ContentTypeForm
 
         @implementer(IContentTypeEncoded)
-        class MockContext(object):
+        class MockContext:
             def __init__(self):
                 self.parameters = {}
 
@@ -69,11 +67,11 @@ class TestContentTypeForm(unittest.TestCase):
         from zope.file.contenttype import ContentTypeForm
 
         @implementer(IContentTypeEncoded)
-        class MockContext(object):
+        class MockContext:
             def __init__(self):
                 self.parameters = {}
 
-        class MockCodec(object):
+        class MockCodec:
             name = 'TestContentTypeForm'
 
         context = MockContext()

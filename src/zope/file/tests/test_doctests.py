@@ -17,23 +17,11 @@
 
 __docformat__ = "reStructuredText"
 import doctest
-import re
 import unittest
 
 from zope.component.testlayer import ZCMLFileLayer
-from zope.testing import renormalizing
 
 import zope.file
-
-
-checker = renormalizing.RENormalizing([
-    # Python 3 unicode removed the "u".
-    (re.compile("u('.*?')"), r"\1"),
-    (re.compile('u(".*?")'), r"\1"),
-    # Python 3 bytes added the "b".
-    (re.compile("b('.*?')"), r"\1"),
-    (re.compile('b(".*?")'), r"\1"),
-])
 
 
 ZopeFileLayer = ZCMLFileLayer(zope.file, 'configure.zcml')
@@ -52,17 +40,17 @@ def fromDocFile(path, **kwargs):
 
 
 def fromSimpleDocFile(path, **kwargs):
-    suite = doctest.DocFileSuite(path, checker=checker)
+    suite = doctest.DocFileSuite(path)
     suite.layer = ZopeFileLayer
     return suite
 
 
 def test_suite():
     return unittest.TestSuite((
-        doctest.DocFileSuite("../README.rst", checker=checker),
-        doctest.DocFileSuite("../browser.rst", checker=checker),
-        fromSimpleDocFile("../adapters.rst", checker=checker),
-        fromDocFile('../contenttype.rst', checker=checker),
-        fromDocFile("../download.rst", checker=checker),
-        fromDocFile("../upload.rst", checker=checker),
+        doctest.DocFileSuite("../README.rst"),
+        doctest.DocFileSuite("../browser.rst"),
+        fromSimpleDocFile("../adapters.rst"),
+        fromDocFile('../contenttype.rst'),
+        fromDocFile("../download.rst"),
+        fromDocFile("../upload.rst"),
     ))

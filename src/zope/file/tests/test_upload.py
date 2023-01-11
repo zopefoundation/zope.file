@@ -1,5 +1,3 @@
-
-
 import unittest
 from io import BytesIO
 
@@ -15,7 +13,7 @@ from zope.file.tests import skipWithoutZopeFormlib
 
 
 @implementer(IContentTypeEncoded)
-class MockContext(object):
+class MockContext:
     def __init__(self):
         self.parameters = {}
 
@@ -35,7 +33,7 @@ class TestFunctions(unittest.TestCase):
     def test_name_finder_with_no_filename(self):
         from zope.file import upload
 
-        class MockFile(object):
+        class MockFile:
             pass
 
         res = upload.nameFinder(MockFile())
@@ -47,7 +45,7 @@ class TestFunctions(unittest.TestCase):
 class TestUpdateBlob(unittest.TestCase):
 
     def setUp(self):
-        super(TestUpdateBlob, self).setUp()
+        super().setUp()
         component.provideUtility(smartMimeTypeGuesser, IMimeTypeGetter)
         self.context = MockContext()
         self.data = BytesIO()
@@ -56,7 +54,7 @@ class TestUpdateBlob(unittest.TestCase):
     def tearDown(self):
         gsm = component.getGlobalSiteManager()
         gsm.unregisterUtility(smartMimeTypeGuesser, IMimeTypeGetter)
-        super(TestUpdateBlob, self).tearDown()
+        super().tearDown()
 
     def test_no_mime_type(self):
         from zope.file import upload
@@ -71,10 +69,10 @@ class TestReupload(unittest.TestCase):
     def test_different_codec(self):
         from zope.file import upload
 
-        class MockCodec(object):
+        class MockCodec:
             name = 'TestContentTypeForm'
 
-        class MockRequest(object):
+        class MockRequest:
             form = ()
             headers = ()
 

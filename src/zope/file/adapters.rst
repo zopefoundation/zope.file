@@ -17,7 +17,7 @@ whose size we can get:
    >>> from zope.filerepresentation.interfaces import IReadFile, IWriteFile
    >>> r = IReadFile(f)
    >>> r.read()
-   'hello'
+   b'hello'
 
    >>> r.size()
    5
