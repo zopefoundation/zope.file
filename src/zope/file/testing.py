@@ -17,8 +17,7 @@
 __docformat__ = "reStructuredText"
 
 import doctest
-
-from six.moves import urllib_parse as urllib
+import urllib.parse
 
 import zope.app.wsgi.testlayer
 import zope.security.checker
@@ -46,26 +45,6 @@ class BrowserLayer(zope.testbrowser.wsgi.TestBrowserLayer,
 ZopeFileLayer = BrowserLayer(zope.file, allowTearDown=True)
 
 
-class _FakeResponse(FakeResponse):
-    if str is bytes:
-        # py2 has a bug, assuming headers are in unicode already, or
-        # are decodable implicitly to ascii
-        def getHeaders(self):
-            headers = super(_FakeResponse, self).getHeaders()
-            result = []
-            for key, value in headers:
-                assert isinstance(key, str)
-                assert isinstance(value, str)
-                result.append((key.decode('latin-1'),
-                               value.decode('latin-1')))
-            return result
-
-        # we also need to ensure we get something that can be printed
-        # in ascii and produce the same output as Py3.
-        def __str__(self):
-            return self.getOutput().decode('latin-1').encode("utf-8")
-
-
 def FunctionalBlobDocFileSuite(*paths, **kw):
     globs = kw.setdefault('globs', {})
     globs['getRootFolder'] = ZopeFileLayer.getRootFolder
@@ -80,7 +59,7 @@ def FunctionalBlobDocFileSuite(*paths, **kw):
             # Strip leading \n
             query_str = query_str.lstrip()
             response = http(wsgi_app, query_str, *args, **kwargs)
-            response.__class__ = _FakeResponse
+            response.__class__ = FakeResponse
             return response
 
         test.globs['http'] = _http
@@ -153,7 +132,7 @@ class Contents(BrowserView):
         oid, obj = item
         info['id'] = info['cb_id'] = oid
         info['object'] = obj
-        info['url'] = urllib.quote(oid.encode('utf-8'))
+        info['url'] = urllib.parse.quote(oid.encode('utf-8'))
         return info
 
 
@@ -176,7 +155,7 @@ class ManagementViewSelector(BrowserView):
         redirect_url = item['action']
         if not redirect_url.lower().startswith(('../', 'javascript:', '++')):
             self.request.response.redirect(redirect_url)
-            return u''
+            return ''
 
         # The zope.app.publication version would redirect to /
         # with self.request.response.redirect('.) and return u''.

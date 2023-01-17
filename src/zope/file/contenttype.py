@@ -125,7 +125,7 @@ class ContentTypeForm(zope.formlib.form.Form):
         else:
             self.have_encoded = False
         self.form_fields = zope.formlib.form.Fields(*fields)
-        super(ContentTypeForm, self).setUpWidgets(
+        super().setUpWidgets(
             ignore_request=ignore_request)
 
     def save_validator(self, action, data):

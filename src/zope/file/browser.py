@@ -25,7 +25,7 @@ from zope import interface
 
 @interface.implementer(zope.size.interfaces.ISized)
 @component.adapter(zope.file.interfaces.IFile)
-class Sized(object):
+class Sized:
 
     def __init__(self, context):
         self.context = context

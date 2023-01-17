@@ -74,7 +74,7 @@ class Upload(zope.formlib.form.AddForm):
             name = nc.chooseName(self._name, ob)
             self.context.contentName = name
 
-        res = super(Upload, self).add(ob)
+        res = super().add(ob)
         # We need to slam on an interface based on the effective MIME type;
         # start by getting the IContentInfo for ob:
         ci = IContentInfo(ob, None)

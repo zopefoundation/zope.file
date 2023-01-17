@@ -130,7 +130,7 @@ expect:
   >>> result = DownloadResult(f)
   >>> L = list(result)
   >>> b"".join(L)
-  'some text'
+  b'some text'
 
 If the body content is really large, the iterator may provide more
 than one chunk of data:

@@ -67,11 +67,11 @@ to specify how many bytes to read, or with a negative or omitted
 argument to read to the end of the file:
 
   >>> r.read(10)
-  ''
+  b''
   >>> r.read()
-  ''
+  b''
   >>> r.read(-1)
-  ''
+  b''
 
 Once the accessor has been closed, we can no longer read from it:
 
@@ -129,35 +129,35 @@ start of the file:
 
   >>> _ = r.seek(20)
   >>> r.read()
-  'still more'
+  b'still more'
 
 That's equivalent to passing 0 as the `whence` argument:
 
   >>> _ = r.seek(20, 0)
   >>> r.read()
-  'still more'
+  b'still more'
 
 We can skip backward and forward relative to the current position by
 passing 1 for `whence`:
 
   >>> _ = r.seek(-10, 1)
   >>> r.read(5)
-  'still'
+  b'still'
   >>> _ = r.seek(2, 1)
   >>> r.read()
-  'ore'
+  b'ore'
 
 We can skip to some position backward from the end of the file using
 the value 2 for `whence`:
 
   >>> _ = r.seek(-10, 2)
   >>> r.read()
-  'still more'
+  b'still more'
 
   >>> _ = r.seek(0)
   >>> _ = r.seek(-4, 2)
   >>> r.read()
-  'more'
+  b'more'
 
   >>> r.close()
 

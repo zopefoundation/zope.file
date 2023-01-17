@@ -25,7 +25,7 @@ Let's do some imports and create a new file object:
   >>> s.sizeForSorting()
   ('byte', 0)
   >>> s.sizeForDisplay()
-  u'0 KB'
+  '0 KB'
 
 Let's add some content to the file:
 
@@ -37,7 +37,7 @@ The sized adapter now reflects the updated size:
   >>> s.sizeForSorting()
   ('byte', 9)
   >>> s.sizeForDisplay()
-  u'1 KB'
+  '1 KB'
 
 Let's try again with a larger file size:
 
@@ -48,7 +48,7 @@ Let's try again with a larger file size:
   ('byte', 1048586)
   >>> m = s.sizeForDisplay()
   >>> m
-  u'${size} MB'
+  '${size} MB'
   >>> m.mapping
   {'size': '1.00'}
 
@@ -61,6 +61,6 @@ And still a bigger size:
   ('byte', 1572864)
   >>> m = s.sizeForDisplay()
   >>> m
-  u'${size} MB'
+  '${size} MB'
   >>> m.mapping
   {'size': '1.50'}
