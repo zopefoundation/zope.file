@@ -35,7 +35,6 @@ class File(persistent.Persistent):
     mimeType = None
 
     _data = b""
-    size = 0
 
     def __init__(self, mimeType=None, parameters=None):
         self.mimeType = mimeType
