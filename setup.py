@@ -61,23 +61,13 @@ setup(
     author='Zope Corporation and Contributors',
     author_email='zope-dev@zope.org',
     description='Efficient File Implementation for Zope Applications',
-    long_description=(
-        read('README.rst')
-        + '\n\n' +
-        '.. contents::'
-        + '\n\n' +
-        read('src', 'zope', 'file', 'README.rst')
-        + '\n\n' +
-        read('src', 'zope', 'file', 'download.rst')
-        + '\n\n' +
-        read('src', 'zope', 'file', 'upload.rst')
-        + '\n\n' +
-        read('src', 'zope', 'file', 'contenttype.rst')
-        + '\n\n' +
-        read('src', 'zope', 'file', 'browser.rst')
-        + '\n\n' +
-        read('CHANGES.rst')
-    ),
+    long_description=(read('README.rst') + '\n\n' + '.. contents::' + '\n\n' +
+                      read('src', 'zope', 'file', 'README.rst') + '\n\n' +
+                      read('src', 'zope', 'file', 'download.rst') + '\n\n' +
+                      read('src', 'zope', 'file', 'upload.rst') + '\n\n' +
+                      read('src', 'zope', 'file', 'contenttype.rst') + '\n\n' +
+                      read('src', 'zope', 'file', 'browser.rst') + '\n\n' +
+                      read('CHANGES.rst')),
     keywords="zope3 web html ui file pattern",
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -86,11 +76,11 @@ setup(
         'License :: OSI Approved :: Zope Public License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Natural Language :: English',
@@ -103,7 +93,7 @@ setup(
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['zope'],
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     extras_require={
         'test': TESTS_REQUIRE,
         'browser': BROWSER_REQUIRES,
@@ -123,7 +113,7 @@ setup(
         'zope.location',
         'zope.mimetype >= 2.3.0',
         'zope.schema',
-        'zope.security >= 4.1.0',
+        'zope.security >= 7.1',
         'zope.size',
     ],
     include_package_data=True,
