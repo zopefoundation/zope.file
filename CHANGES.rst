@@ -9,6 +9,8 @@
 
 - Add support for Python 3.9, 3.10, 3.11, 3.12.
 
+- Update tests to ``zope.i18nmessageid >= 7``.
+
 
 1.2.0 (2020-03-06)
 ==================
