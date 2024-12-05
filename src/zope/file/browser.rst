@@ -49,7 +49,7 @@ Let's try again with a larger file size:
   >>> m = s.sizeForDisplay()
   >>> m
   '${size} MB'
-  >>> m.mapping
+  >>> dict(m.mapping)
   {'size': '1.00'}
 
 And still a bigger size:
@@ -62,5 +62,5 @@ And still a bigger size:
   >>> m = s.sizeForDisplay()
   >>> m
   '${size} MB'
-  >>> m.mapping
+  >>> dict(m.mapping)
   {'size': '1.50'}
