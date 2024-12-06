@@ -5,11 +5,9 @@
 2.0 (unreleased)
 ================
 
-- Add support for Python 3.13.
-
 - Drop support for Python 2.7, 3.5, 3.6, 3.7.
 
-- Add support for Python 3.9, 3.10, 3.11, 3.12.
+- Add support for Python 3.9, 3.10, 3.11, 3.12, 3.13.
 
 - Update tests to ``zope.i18nmessageid >= 7``.
 
